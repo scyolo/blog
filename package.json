@@ -16,7 +16,10 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "test:foundation": "node --test tests/foundation.node.mjs",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node --test tests/foundation.node.mjs tests/security.node.mjs && vitest run",
+    "test:coverage": "vitest run --coverage",
+    "audit:security": "node scripts/audit.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.19",

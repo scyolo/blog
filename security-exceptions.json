@@ -1,0 +1,10 @@
+[
+  {
+    "id": "GHSA-ch52-4w7c-c8xp",
+    "module": "http-cache-semantics",
+    "version": "4.2.0",
+    "path": ".>astro>http-cache-semantics",
+    "expires": "2026-11-02",
+    "reason": "Astro assets/build/remote.js uses this only to calculate build-time image TTL; this static site has no authenticated shared HTTP cache, forwards no visitor cookies/max-stale headers, and allows no remote image optimization sources. Reassess before SSR, remote images or authenticated proxy features; see docs/SECURITY.md."
+  }
+]

@@ -12,7 +12,7 @@ for (const name of ['dist', '.astro', 'public/pagefind']) {
   if (entry?.isSymbolicLink()) throw new Error('Refusing to clean a symlink: ' + target);
   await rm(target, { recursive: true, force: true });
 }
-const env = { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' };
+const env = { ...process.env, ASTRO_TELEMETRY_DISABLED: '1', BUILD_TIMESTAMP: process.env.BUILD_TIMESTAMP ?? new Date().toISOString() };
 async function runBin(name, args) {
   const manifestPath = resolve(root, 'node_modules', name, 'package.json');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
