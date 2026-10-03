@@ -90,3 +90,7 @@ export async function readSiteContent(directory = process.cwd()) {
   for (const record of [...posts, ...projects, ...pages]) for (const asset of await validateResources(record, root)) assets.add(asset);
   return { posts, projects, pages, assets: [...assets].sort() };
 }
+
+export async function validateMarkdownResources(body: string, source: string, directory = process.cwd()) {
+  return validateResources({ body, source, data: {} }, await realpath(directory));
+}
