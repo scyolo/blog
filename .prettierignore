@@ -9,3 +9,5 @@ public/pagefind/
 pnpm-lock.yaml
 LICENSE
 LICENSES/
+
+output/playwright/

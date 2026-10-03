@@ -20,7 +20,9 @@
     "test": "node --test tests/foundation.node.mjs && vitest run",
     "test:coverage": "vitest run --coverage",
     "audit:security": "node scripts/audit.mjs",
-    "test:build-contract": "node --test tests/build-contract.node.mjs"
+    "test:build-contract": "node --test tests/build-contract.node.mjs",
+    "validate:content": "node scripts/validate-content.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.19",

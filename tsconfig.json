@@ -1,6 +1,9 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
   "exclude": [
     "dist",
     "public/pagefind",
@@ -8,12 +11,17 @@
     ".cache",
     "coverage",
     "playwright-report",
-    "test-results"
+    "test-results",
+    "output/playwright"
   ],
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"],
-      "@/astro-paper.config": ["./astro-paper.config"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/astro-paper.config": [
+        "./astro-paper.config"
+      ]
     }
   }
 }
