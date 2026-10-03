@@ -28,7 +28,7 @@ const config: ResolvedAstroPaperConfig = {
   },
   features: {
     lightAndDarkMode: userConfig.features?.lightAndDarkMode ?? true,
-    dynamicOgImage: userConfig.features?.dynamicOgImage ?? true,
+    dynamicOgImage: userConfig.features?.dynamicOgImage ?? false,
     showArchives: userConfig.features?.showArchives ?? true,
     showBackButton: userConfig.features?.showBackButton ?? true,
     editPost: userConfig.features?.editPost ?? { enabled: false },
