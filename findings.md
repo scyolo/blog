@@ -22,3 +22,8 @@
 - 上游 getPostPaths 仍从 filePath 推导前缀：后续必须用测试保证移动 Markdown 文件不改变 URL。
 - RSS 上游用修改时间代替发布时间，后续应分离发布时间与更新显示，避免修改旧文导致订阅重排。
 - 基础静态构建已成功，但尚未完成中文与图表组合、发布状态模型、UI 和云端部署验收。
+
+## 二次安全复核
+- 更新到 lint 插件 3.2.1 并在原 semver 范围内刷新传递依赖后，剩余仅一个 high：GHSA-ch52-4w7c-c8xp，http-cache-semantics <=4.2.0，目前公告未提供修复版本。其跨用户缓存攻击要求共享认证缓存和可控 max-stale 请求。
+- 实际依赖位置：Astro dist/assets/build/remote.js，仅远程图片构建缓存；此模块构造自己的 Request，使用 storable/timeToLive，无转发访客会话或 max-stale，静态产物不运行 Node/认证代理。本项目还禁止远程图片优化源。
+- 不伪造 npm audit 零漏洞。将加入精确公告+版本+路径+期限的审查例外，报告必须保留该未修复告警；新增告警、到期或路径变更阻止通过。
