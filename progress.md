@@ -57,3 +57,7 @@
 - pnpm install --frozen-lockfile --offline 已通过；最终再构建结果见 .cache/verified-build.log（需回读确认完成）。
 
 - 最终构建回读确认：21:19 静态构建成功，28 个主题样文页面、Pagefind Extended 索引 7 篇英文样文；只是工程验证，不是最终内容。
+
+## 继续实施：内容与技术写作
+- 复核工作区 b17c841，上一轮为实际进展，未重复基础排错。
+- 安装 YAML/KaTeX/Mermaid 等已核实版本。新增内容模型用例产生预期编译期 RED：所需新模块尚不存在；不将其称作运行期断言失败。
