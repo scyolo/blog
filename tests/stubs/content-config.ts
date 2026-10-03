@@ -1,1 +1,1 @@
-export const BLOG_PATH = 'src/content/posts';
+export const BLOG_PATH = "src/content/posts";
