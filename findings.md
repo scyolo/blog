@@ -39,3 +39,7 @@
 
 - 覆盖率原始 JSON 验证：当前 getPostPaths、getSortedPosts、postFilter 与 security-audit 均被纳入。Vitest 控制台可能隐藏满分文件，不应仅凭表格未列出就断言漏覆盖；此前的“需检查”是疑点而非已证实错误。移除不必要的 resetModules 只是简化测试隔离，不能据此声称修复了已证实的 Vitest 缺陷。
 - 后续文章布局需增加包含 </script> 元数据的 JSON-LD 转义回归，不能直接假定 JSON.stringify 适合 set:html 场景。
+
+- 隔离构建测试首次未复制 .gitignore，Tailwind 在依赖 junction 下扫描范围异常，基线构建超时；这是测试环境问题，不能记作业务 RED。已停止该测试，补上忽略规则后重验有效控制组。
+
+- 对照实际工作区构建成功，隔离副本仍在 Vite 阶段超时；因此“缺少 .gitignore 是根因”未获证明。改为副本内冻结锁文件离线安装独立 node_modules，不复用整个依赖目录 junction；控制组未通过时不执行负例，超时不算业务失败。
