@@ -8,7 +8,6 @@ const entry = (id: string, overrides: Record<string, unknown> = {}) => ({
 }) as unknown as CollectionEntry<'posts'>;
 
 beforeEach(() => {
-  vi.resetModules();
   vi.useFakeTimers();
   vi.setSystemTime(NOW);
   vi.stubEnv('DEV', false);
@@ -63,4 +62,9 @@ describe('稳定地址与时间顺序', () => {
     expect(getSortedPosts(original).map(p => p.id)).toEqual(['recent', 'old']);
     expect(original).toEqual([old, recent]);
   });
+});
+
+it('相同发布时间使用稳定 ID 顺序，不受输入数组顺序影响', async () => {
+  const { getSortedPosts } = await import('../src/utils/getSortedPosts');
+  expect(getSortedPosts([entry('z'), entry('a')]).map(p => p.id)).toEqual(['a', 'z']);
 });

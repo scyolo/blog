@@ -17,7 +17,7 @@
     "lint": "eslint .",
     "test:foundation": "node --test tests/foundation.node.mjs",
     "check": "astro check",
-    "test": "node --test tests/foundation.node.mjs tests/security.node.mjs && vitest run",
+    "test": "node --test tests/foundation.node.mjs && vitest run",
     "test:coverage": "vitest run --coverage",
     "audit:security": "node scripts/audit.mjs"
   },

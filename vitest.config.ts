@@ -12,9 +12,9 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/lib/**/*.{ts,mjs}', 'src/utils/postFilter.ts', 'src/utils/getPostPaths.ts', 'src/utils/getSortedPosts.ts'],
+      include: ['src/lib/**/*.{ts,mjs}', 'src/utils/postFilter.ts', 'src/utils/getPostPaths.ts', 'src/utils/getSortedPosts.ts', 'scripts/lib/*.mjs'],
       reporter: ['text', 'json-summary'],
-      thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
+      thresholds: { perFile: true, lines: 80, functions: 80, branches: 80, statements: 80 },
     },
   },
 });

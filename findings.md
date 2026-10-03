@@ -27,3 +27,8 @@
 - 更新到 lint 插件 3.2.1 并在原 semver 范围内刷新传递依赖后，剩余仅一个 high：GHSA-ch52-4w7c-c8xp，http-cache-semantics <=4.2.0，目前公告未提供修复版本。其跨用户缓存攻击要求共享认证缓存和可控 max-stale 请求。
 - 实际依赖位置：Astro dist/assets/build/remote.js，仅远程图片构建缓存；此模块构造自己的 Request，使用 storable/timeToLive，无转发访客会话或 max-stale，静态产物不运行 Node/认证代理。本项目还禁止远程图片优化源。
 - 不伪造 npm audit 零漏洞。将加入精确公告+版本+路径+期限的审查例外，报告必须保留该未修复告警；新增告警、到期或路径变更阻止通过。
+
+## 自检发现验证范围问题
+- 上游 .prettierignore 使用 /* 白名单模式，导致新增 scripts/tests/docs/配置实际上被跳过。前次格式 PASS 仅适用于其原白名单，不能代表全工程。新增用 Prettier getFileInfo 真实检查覆盖范围的回归。
+- 去掉测试中的全局 vi.resetModules，并把审计逻辑统一纳入 Vitest 覆盖率，避免测试执行了但报告漏掉模块。
+- 对审计门禁新增：非零告警计数却空明细、公告出现补丁、严重级别变更、北京时间到期边界等测试，确保实现本身也被审查。
