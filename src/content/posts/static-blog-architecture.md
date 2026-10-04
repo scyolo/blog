@@ -2,7 +2,7 @@
 slug: static-blog-architecture
 title: 一个轻量博客，从 Markdown 到网页
 description: 用一张分组架构图，梳理内容、构建与发布之间的关系。
-pubDatetime: '2026-09-28T14:00:00+08:00'
+pubDatetime: "2026-09-28T14:00:00+08:00"
 draft: false
 category: knowledge
 tags: [Astro, 架构设计]

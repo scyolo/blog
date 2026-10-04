@@ -1,130 +1,84 @@
 ---
-import { getCollection } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import IconRss from "@/assets/icons/IconRss.svg";
-import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import Socials from "@/components/Socials.astro";
-import Card from "@/components/Card.astro";
-import LinkButton from "@/components/LinkButton.astro";
-import { getSortedPosts } from "@/utils/getSortedPosts";
-import { useTranslations } from "@/i18n";
-import config from "@/config";
-
-const { socials, posts: postsConfig } = config;
-
-const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
-
-const posts = await getCollection("posts");
-const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
-const homePath = getRelativeLocaleUrl(locale, "");
+import SiteLayout from "../layouts/SiteLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { getPosts } from "../lib/site-content";
+import config from "../config";
+const posts = await getPosts();
 ---
 
-<Layout>
-  <Header />
-  <main
-    id="main-content"
-    data-layout="index"
-    data-home-path={homePath}
-    class="app-layout"
-  >
-    <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        Mingalaba
+<SiteLayout>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">SCYOLO / A PERSONAL NOTEBOOK</p>
+      <h1>
+        把学到的，写下来。
+        <br />
+        <span>把日常的，留下来。</span>
       </h1>
-      <a
-        target="_blank"
-        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
-        class="inline-block"
-        aria-label="RSS Feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
-
-      <p>
-        AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro
-        blog theme. This theme follows best practices and provides accessibility
-        out of the box. Light and dark mode are supported by default. Moreover,
-        additional color schemes can also be configured.
+      <p class="hero-description">
+        关于技术、思考与生活的片段，
+        <br class="desktop-only" />
+        都收在这些页面里。
       </p>
-      <p class="mt-2">
-        Read the blog posts or check
-        <LinkButton
-          class="hover:text-accent underline decoration-dashed underline-offset-4"
-          href="https://github.com/satnaing/astro-paper#readme"
-        >
-          README
-        </LinkButton>{" "}
-        for more info.
-      </p>
-      {socials.length > 0 && (
-        <div class="mt-4 flex max-sm:flex-col sm:items-center">
-          <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-            {t.home.socialLinks}:
-          </div>
-          <Socials />
-        </div>
-      )}
-    </section>
-
-    {featuredPosts.length > 0 && (
-      <section
-        id="featured"
-        class:list={[
-          "pt-12 pb-6",
-          { "border-border border-b": recentPosts.length > 0 },
-        ]}
-      >
-        <h2 class="text-2xl font-semibold tracking-wide">{t.home.featured}</h2>
-        <ul>
-          {featuredPosts.map(data => (
-            <Card variant="h3" {...data} />
-          ))}
-        </ul>
-      </section>
-    )}
-
-    {recentPosts.length > 0 && (
-      <section id="recent-posts" class="pt-12 pb-6">
-        <h2 class="text-2xl font-semibold tracking-wide">
-          {t.home.recentPosts}
-        </h2>
-        <ul>
-          {recentPosts.slice(0, postsConfig.perIndex).map(data => (
-            <Card variant="h3" {...data} />
-          ))}
-        </ul>
-      </section>
-    )}
-
-    <div class="my-8 text-center">
-      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-        {t.home.allPosts}
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
+      <div class="hero-links">
+        <a class="text-link" href="/posts/">
+          开始阅读 <span aria-hidden="true">↗</span>
+        </a>
+        <a href="/about/">认识这个小站</a>
+      </div>
     </div>
-  </main>
-  <Footer />
-</Layout>
-
-<script>
-  document.addEventListener("astro:page-load", () => {
-    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
-      ?.dataset;
-    const baseRoot = import.meta.env.BASE_URL.replace(/\/?$/, "/");
-    if (indexLayout?.layout) {
-      sessionStorage.setItem("backUrl", indexLayout.homePath ?? baseRoot);
-    }
-  });
-</script>
+    <aside class="hero-note" aria-label="这里的写作方向">
+      <p class="eyebrow">BETWEEN THE LINES</p>
+      <ol>
+        <li>
+          <span>01</span>用文字理解问题
+        </li>
+        <li>
+          <span>02</span>让方法可以复现
+        </li>
+        <li>
+          <span>03</span>给日常一点留白
+        </li>
+      </ol>
+      <p class="note-signature">持续记录，慢慢生长。</p>
+    </aside>
+  </section>
+  <section class="home-writing" aria-labelledby="recent-heading">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">RECENT WRITING</p>
+        <h2 id="recent-heading">最近的记录</h2>
+      </div>
+      <a class="text-link" href="/posts/">
+        全部文章 <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    {posts.length ? (
+      <div class="post-grid">
+        {posts.slice(0, config.posts.perIndex).map((post, index) => (
+          <PostCard post={post} eager={index < 3} />
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <h3>第一篇文章，还在路上。</h3>
+        <p>这里会慢慢积累值得留下的文字。</p>
+      </div>
+    )}
+    {posts.some(post => post.data.demo) && (
+      <p class="example-note">
+        带「示例」标识的文章用于展示排版与功能，不代表作者真实经历。
+      </p>
+    )}
+  </section>
+  <section class="project-teaser">
+    <div>
+      <p class="eyebrow">LEARN BY BUILDING</p>
+      <h2>想法，也可以做出来。</h2>
+      <p>从一个小问题开始，把思路变成可以运行的项目。</p>
+    </div>
+    <a class="text-link" href="/projects/">
+      看看项目 <span aria-hidden="true">↗</span>
+    </a>
+  </section>
+</SiteLayout>

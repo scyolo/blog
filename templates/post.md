@@ -2,7 +2,7 @@
 slug: new-post
 title: 文章标题
 description: 用一句话说明文章要解决的问题或想记录的事情。
-pubDatetime: '2026-10-03T09:00:00+08:00'
+pubDatetime: "2026-10-03T09:00:00+08:00"
 draft: true
 category: knowledge
 tags: []

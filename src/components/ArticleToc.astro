@@ -1,0 +1,38 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+const headings = Astro.props.headings.filter(
+  heading => heading.depth === 2 || heading.depth === 3
+);
+---
+
+{headings.length > 0 && (
+  <>
+    <aside class="toc-desktop">
+      <p class="eyebrow">ON THIS PAGE</p>
+      <h2>文章目录</h2>
+      <nav aria-label="文章目录">
+        <ol>
+          {headings.map(heading => (
+            <li class:list={{ nested: heading.depth === 3 }}>
+              <a href={"#" + heading.slug}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </aside>
+    <details class="toc-mobile">
+      <summary>文章目录</summary>
+      <nav aria-label="文章目录">
+        <ol>
+          {headings.map(heading => (
+            <li>
+              <a href={"#" + heading.slug}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </details>
+  </>
+)}

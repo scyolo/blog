@@ -1,34 +1,27 @@
 ---
-import { getCollection } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
-import Main from "@/components/Main.astro";
-import Footer from "@/components/Footer.astro";
-import Tag from "@/components/Tag.astro";
-import { getUniqueTags } from "@/utils/getUniqueTags";
-import { useTranslations } from "@/i18n";
-import config from "@/config";
-
-const posts = await getCollection("posts", ({ data }) => !data.draft);
-const tags = getUniqueTags(posts);
-
-const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getPosts } from "../../lib/site-content";
+import { groupTags } from "../../lib/lists";
+import config from "../../config";
+const topics = groupTags(await getPosts());
 ---
 
-<Layout title={`${t.pages.tagsTitle} | ${config.site.title}`}>
-  <Header />
-
-  <Breadcrumb />
-
-  <Main pageTitle={t.pages.tagsTitle} pageDesc={t.pages.tagsDesc}>
-    <ul class="flex flex-wrap gap-6">
-      {tags.map(({ tag, tagName }) => (
-        <Tag {tag} {tagName} />
-      ))}
-    </ul>
-  </Main>
-
-  <Footer />
-</Layout>
+<SiteLayout title={"标签 · " + config.site.title}>
+  <header class="page-heading">
+    <p class="eyebrow">FOLLOW A THREAD</p>
+    <h1>标签</h1>
+    <p>沿着一个主题，发现更多相关的记录。</p>
+  </header>
+  <div class="topic-grid">
+    {topics.map(topic => (
+      <a href={"/tags/" + topic.id + "/"}>
+        <span>{topic.label}</span>
+        <small>{topic.posts.length} 篇</small>
+        <span aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </div>
+  {!topics.length && (
+    <p class="empty-state">有了文章之后，主题也会慢慢出现。</p>
+  )}
+</SiteLayout>

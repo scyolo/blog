@@ -1,34 +1,31 @@
 ---
 import { getEntry, render } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
-import Main from "@/components/Main.astro";
-import Footer from "@/components/Footer.astro";
-import config from "@/config";
-
+import SiteLayout from "../layouts/SiteLayout.astro";
+import config from "../config";
 const about = await getEntry("pages", "about");
-
-if (!about) {
-  throw new Error(
-    "Missing content entry: `about.md` or `about.mdx` in `src/content/pages/`"
-  );
-}
-
+if (!about) throw new Error("Missing src/content/pages/about.md");
 const { Content } = await render(about);
 ---
 
-<Layout
-  title={`${about.data.title} | ${config.site.title}`}
+<SiteLayout
+  title={"关于 · " + config.site.title}
   description={about.data.description}
+  class="narrow-page"
 >
-  <Header />
-
-  <Breadcrumb />
-
-  <Main pageTitle={about.data.title} class="app-prose">
+  <header class="page-heading">
+    <p class="eyebrow">HELLO, I'M SCYOLO</p>
+    <h1>关于</h1>
+    <p>一个记录技术、思考与日常的小站。</p>
+  </header>
+  <div class="app-prose">
     <Content />
-  </Main>
-
-  <Footer />
-</Layout>
+  </div>
+  <div class="about-end">
+    <span class="brand-mark" aria-hidden="true">
+      <i></i>
+      <i></i>
+      <i></i>
+    </span>
+    <p>感谢你在这里停留。</p>
+  </div>
+</SiteLayout>

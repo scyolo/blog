@@ -1,0 +1,61 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getProjects } from "../../lib/site-content";
+import { Image } from "astro:assets";
+import config from "../../config";
+const projects = await getProjects();
+---
+
+<SiteLayout title={"项目 · " + config.site.title}>
+  <header class="page-heading">
+    <p class="eyebrow">IDEAS INTO PRACTICE</p>
+    <h1>项目</h1>
+    <p>在动手的过程中，把想法变得具体。</p>
+  </header>
+  <div class="project-grid">
+    {projects.map((project, index) => (
+      <article class="project-card">
+        <div class="project-number" aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </div>
+        {project.data.cover && (
+          <Image src={project.data.cover} alt="" loading="lazy" />
+        )}
+        <h2>{project.data.title}</h2>
+        {project.data.demo && <span class="demo-badge">示例项目</span>}
+        <p>{project.data.description}</p>
+        <ul class="tech-stack" aria-label="技术栈">
+          {project.data.techStack.map(tech => (
+            <li>{tech}</li>
+          ))}
+        </ul>
+        <div class="project-links">
+          {project.data.repoUrl && (
+            <a
+              class="text-link"
+              href={project.data.repoUrl}
+              rel="noopener noreferrer"
+            >
+              项目源码 ↗
+            </a>
+          )}
+          {project.data.demoUrl && (
+            <a
+              class="text-link"
+              href={project.data.demoUrl}
+              rel="noopener noreferrer"
+            >
+              访问项目 ↗
+            </a>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+  {!projects.length && (
+    <div class="empty-state">
+      <h2>项目还在整理中。</h2>
+      <p>先从一个小问题开始。</p>
+    </div>
+  )}
+</SiteLayout>

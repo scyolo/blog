@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { PageSlice } from "../../../lib/lists";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import PostListing from "../../../components/PostListing.astro";
+import CategoryNav from "../../../components/CategoryNav.astro";
+import { getPosts, categories } from "../../../lib/site-content";
+import { paginate } from "../../../lib/lists";
+import config from "../../../config";
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return Object.entries(categories).flatMap(([category, label]) =>
+    paginate(
+      posts.filter(post => post.data.category === category),
+      config.posts.perPage
+    ).map(page => ({
+      params: {
+        category,
+        page: page.number === 1 ? undefined : String(page.number),
+      },
+      props: { page, label, category },
+    }))
+  );
+}
+interface Props {
+  page: PageSlice<CollectionEntry<"posts">>;
+  label: string;
+  category: string;
+}
+const { page, label, category } = Astro.props;
+---
+
+<SiteLayout title={label + " · " + config.site.title}>
+  <header class="page-heading">
+    <p class="eyebrow">
+      {category === "knowledge"
+        ? "KNOWLEDGE & PRACTICE"
+        : "NOTES ON EVERYDAY LIFE"}
+    </p>
+    <h1>{label}</h1>
+    <p>
+      {category === "knowledge"
+        ? "把问题拆开，把方法留下。"
+        : "给生活里的小片段，留一个位置。"}
+    </p>
+  </header>
+  <CategoryNav />
+  <PostListing page={page} base={"/categories/" + category + "/"} />
+</SiteLayout>

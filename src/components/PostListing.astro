@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { PageSlice } from "../lib/lists";
+import PostCard from "./PostCard.astro";
+import Pager from "./Pager.astro";
+interface Props {
+  page: PageSlice<CollectionEntry<"posts">>;
+  base: string;
+}
+const { page, base } = Astro.props;
+---
+
+{page.items.length ? (
+  <div class="post-grid">
+    {page.items.map((post, index) => (
+      <PostCard post={post} eager={index < 3} />
+    ))}
+  </div>
+) : (
+  <div class="empty-state">
+    <h2>这一页，还留着空白。</h2>
+    <p>暂时没有已发布的文章，之后再来看看吧。</p>
+    <a href="/">回到首页</a>
+  </div>
+)}
+<Pager base={base} current={page.number} total={page.totalPages} />

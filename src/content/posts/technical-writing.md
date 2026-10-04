@@ -2,7 +2,7 @@
 slug: technical-writing
 title: 把想法写清楚：代码、公式与图解
 description: 一篇技术排版示例，验证代码、表格、数学公式与流程图能否共同服务于阅读。
-pubDatetime: '2026-10-01T09:00:00+08:00'
+pubDatetime: "2026-10-01T09:00:00+08:00"
 draft: false
 category: knowledge
 tags: [Markdown, 技术写作]
@@ -51,11 +51,11 @@ flowchart LR
 
 ## 用表格总结选择
 
-| 内容 | 处理方式 | 读者得到什么 |
-| --- | --- | --- |
-| 文章 | Markdown | 清楚的层级 |
-| 公式 | KaTeX | 稳定的数学排版 |
-| 图表 | Mermaid | 可维护的说明图 |
+| 内容 | 处理方式 | 读者得到什么   |
+| ---- | -------- | -------------- |
+| 文章 | Markdown | 清楚的层级     |
+| 公式 | KaTeX    | 稳定的数学排版 |
+| 图表 | Mermaid  | 可维护的说明图 |
 
 ## 留下可复现的结论
 

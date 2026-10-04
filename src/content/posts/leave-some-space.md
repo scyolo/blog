@@ -2,7 +2,7 @@
 slug: leave-some-space
 title: 留一点空白，给正在形成的想法
 description: 一篇随笔版式样文，看看图像、段落与留白如何相处。
-pubDatetime: '2026-09-25T16:30:00+08:00'
+pubDatetime: "2026-09-25T16:30:00+08:00"
 draft: false
 category: essay
 tags: [阅读, 随笔]

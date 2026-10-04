@@ -1,0 +1,20 @@
+---
+const items = [
+  { href: "/posts/", label: "全部" },
+  { href: "/categories/knowledge/", label: "知识笔记" },
+  { href: "/categories/essay/", label: "随笔" },
+];
+---
+
+<nav class="category-nav" aria-label="文章栏目">
+  {items.map(item => (
+    <a
+      href={item.href}
+      aria-current={
+        Astro.url.pathname.startsWith(item.href) ? "page" : undefined
+      }
+    >
+      {item.label}
+    </a>
+  ))}
+</nav>

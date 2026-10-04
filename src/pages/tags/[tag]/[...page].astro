@@ -1,59 +1,37 @@
 ---
-import { getCollection } from "astro:content";
-import type { GetStaticPathsOptions } from "astro";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Main from "@/components/Main.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
-import Card from "@/components/Card.astro";
-import Footer from "@/components/Footer.astro";
-import Pagination from "@/components/Pagination.astro";
-import { getUniqueTags } from "@/utils/getUniqueTags";
-import { getSortedPosts } from "@/utils/getSortedPosts";
-import { slugifyAll } from "@/utils/slugify";
-import { useTranslations } from "@/i18n";
-import config from "@/config";
-
-export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts = await getCollection("posts", ({ data }) => !data.draft);
-  const tags = getUniqueTags(posts);
-
-  return tags.flatMap(({ tag, tagName }) => {
-    const tagPosts = getSortedPosts(
-      posts.filter(({ data }) => slugifyAll(data.tags).includes(tag))
-    );
-
-    return paginate(tagPosts, {
-      params: { tag },
-      props: { tagName },
-      pageSize: config.posts.perPage,
-    });
-  });
+import type { CollectionEntry } from "astro:content";
+import type { PageSlice } from "../../../lib/lists";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import PostListing from "../../../components/PostListing.astro";
+import { getPosts } from "../../../lib/site-content";
+import { groupTags, paginate } from "../../../lib/lists";
+import config from "../../../config";
+export async function getStaticPaths() {
+  return groupTags(await getPosts()).flatMap(topic =>
+    paginate(topic.posts, config.posts.perPage).map(page => ({
+      params: {
+        tag: topic.id,
+        page: page.number === 1 ? undefined : String(page.number),
+      },
+      props: { page, topicId: topic.id, label: topic.label },
+    }))
+  );
 }
-
-const { page, tagName } = Astro.props;
-
-const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
+interface Props {
+  page: PageSlice<CollectionEntry<"posts">>;
+  label: string;
+  topicId: string;
+}
+const { page, label, topicId } = Astro.props;
 ---
 
-<Layout title={`${t.pages.tagTitle}: ${tagName} | ${config.site.title}`}>
-  <Header />
-
-  <Breadcrumb />
-
-  <Main
-    pageTitle={`${t.pages.tagTitle}: ${tagName}`}
-    pageDesc={`${t.pages.tagDesc} "${tagName}".`}
-  >
-    <ul>
-      {page.data.map(data => (
-        <Card {...data} />
-      ))}
-    </ul>
-  </Main>
-
-  <Pagination {page} />
-
-  <Footer noMarginTop={page.lastPage > 1} />
-</Layout>
+<SiteLayout title={label + " · 标签 · " + config.site.title}>
+  <header class="page-heading">
+    <a class="back-link" href="/tags/">
+      ← 所有标签
+    </a>
+    <h1>{label}</h1>
+    <p>这个主题下，有 {page.totalItems} 篇记录。</p>
+  </header>
+  <PostListing page={page} base={"/tags/" + topicId + "/"} />
+</SiteLayout>

@@ -1,0 +1,26 @@
+---
+import Layout from "./Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonicalURL?: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  class?: string;
+}
+const { class: className = "", ...metadata } = Astro.props;
+---
+
+<Layout {...metadata}>
+  <Fragment slot="head">
+    <slot name="head" />
+  </Fragment>
+  <Header />
+  <main id="main-content" tabindex="-1" class:list={["page shell", className]}>
+    <slot />
+  </main>
+  <Footer />
+</Layout>

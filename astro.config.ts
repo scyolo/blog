@@ -13,8 +13,8 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
-import { fileURLToPath } from 'node:url';
-import { readSiteContent } from './src/lib/content-files';
+import { fileURLToPath } from "node:url";
+import { readSiteContent } from "./src/lib/content-files";
 
 export default defineConfig({
   output: "static",
@@ -23,7 +23,14 @@ export default defineConfig({
   site: config.site.url,
   prerenderConflictBehavior: "error",
   integrations: [
-    { name: "content-contract", hooks: { "astro:config:done": async ({ config: astroConfig }) => { await readSiteContent(fileURLToPath(astroConfig.root)); } } },
+    {
+      name: "content-contract",
+      hooks: {
+        "astro:config:done": async ({ config: astroConfig }) => {
+          await readSiteContent(fileURLToPath(astroConfig.root));
+        },
+      },
+    },
     sitemap({
       filter: page =>
         config.features?.showArchives !== false || !page.endsWith("/archives/"),
@@ -39,7 +46,10 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath, remarkBlog],
-      rehypePlugins: [[rehypeKatex, { throwOnError: true, trust: false }], rehypeCallouts],
+      rehypePlugins: [
+        [rehypeKatex, { throwOnError: true, trust: false }],
+        rehypeCallouts,
+      ],
     }),
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },
