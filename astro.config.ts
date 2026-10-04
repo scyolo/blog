@@ -2,8 +2,9 @@ import { defineConfig, envField, svgoOptimizer } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import { unified } from "@astrojs/markdown-remark";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import { remarkBlog } from "./src/lib/markdown";
 import rehypeCallouts from "rehype-callouts";
 import {
   transformerNotationDiff,
@@ -12,32 +13,33 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
+import { fileURLToPath } from 'node:url';
+import { readSiteContent } from './src/lib/content-files';
 
 export default defineConfig({
   output: "static",
   trailingSlash: "always",
   image: { domains: [], remotePatterns: [] },
   site: config.site.url,
+  prerenderConflictBehavior: "error",
   integrations: [
+    { name: "content-contract", hooks: { "astro:config:done": async ({ config: astroConfig }) => { await readSiteContent(fileURLToPath(astroConfig.root)); } } },
     sitemap({
       filter: page =>
         config.features?.showArchives !== false || !page.endsWith("/archives/"),
     }),
   ],
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: ["zh-CN"],
+    defaultLocale: "zh-CN",
     routing: {
       prefixDefaultLocale: false,
     },
   },
   markdown: {
     processor: unified({
-      remarkPlugins: [
-        remarkToc,
-        [remarkCollapse, { test: "Table of contents" }],
-      ],
-      rehypePlugins: [rehypeCallouts],
+      remarkPlugins: [remarkMath, remarkBlog],
+      rehypePlugins: [[rehypeKatex, { throwOnError: true, trust: false }], rehypeCallouts],
     }),
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },

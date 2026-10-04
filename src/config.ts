@@ -8,14 +8,14 @@ import userConfig from "@/astro-paper.config";
 import type { ResolvedAstroPaperConfig } from "./types/config";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 
-const DEFAULT_OG_IMAGE = "default-og.jpg";
+const DEFAULT_OG_IMAGE = "default-og.png";
 
 const config: ResolvedAstroPaperConfig = {
   site: {
     ...userConfig.site,
     ogImage: userConfig.site.ogImage ?? DEFAULT_OG_IMAGE,
-    lang: userConfig.site.lang ?? "en",
-    timezone: userConfig.site.timezone ?? "UTC",
+    lang: userConfig.site.lang ?? "zh-CN",
+    timezone: userConfig.site.timezone ?? "Asia/Shanghai",
     dir: userConfig.site.dir ?? "ltr",
     googleVerification:
       userConfig.site.googleVerification || PUBLIC_GOOGLE_SITE_VERIFICATION,
@@ -24,7 +24,7 @@ const config: ResolvedAstroPaperConfig = {
     perPage: userConfig.posts?.perPage ?? 4,
     perIndex: userConfig.posts?.perIndex ?? 4,
     scheduledPostMargin:
-      userConfig.posts?.scheduledPostMargin ?? 15 * 60 * 1000,
+      userConfig.posts?.scheduledPostMargin ?? 0,
   },
   features: {
     lightAndDarkMode: userConfig.features?.lightAndDarkMode ?? true,

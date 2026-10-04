@@ -9,5 +9,5 @@ export default defineConfig({
   reporter: [['list'], ['html', { outputFolder: 'output/playwright/report', open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:4322', headless: true, colorScheme: 'light', trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } } }],
-  webServer: { command: 'node ' + JSON.stringify(astroBin) + ' preview --host 127.0.0.1 --port 4322', url: 'http://127.0.0.1:4322', reuseExistingServer: false, timeout: 30000 },
+  webServer: { command: 'node ' + JSON.stringify(astroBin) + ' preview --ignore-lock --host 127.0.0.1 --port 4322', url: 'http://127.0.0.1:4322', reuseExistingServer: false, timeout: 30000 },
 });

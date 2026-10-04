@@ -1,37 +1,20 @@
-import { defineCollection } from "astro:content";
-import { z } from "astro/zod";
-import { glob } from "astro/loaders";
-import config from "@/config";
-
-export const BLOG_PATH = "src/content/posts";
-
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
+import { glob } from 'astro/loaders';
+import { postSchema, projectSchema, pageSchema, timestampSchema, slugSchema } from './lib/content-schema';
+export const BLOG_PATH = 'src/content/posts';
+const id = ({ data }: { data: Record<string, unknown> }) => slugSchema.parse(data.slug);
 const posts = defineCollection({
-  loader: glob({ pattern: "**/[^_]*.md", base: `./${BLOG_PATH}` }),
-  schema: ({ image }) =>
-    z.object({
-      author: z.string().default(config.site.author),
-      pubDatetime: z.date(),
-      modDatetime: z.date().optional().nullable(),
-      title: z.string(),
-      featured: z.boolean().optional(),
-      draft: z.boolean().optional(),
-      tags: z.array(z.string()).default(["others"]),
-      ogImage: image().or(z.string()).optional(),
-      description: z.string(),
-      canonicalURL: z.string().optional(),
-      hideEditPost: z.boolean().optional(),
-      timezone: z.string().optional(),
-    }),
-});
-
-const pages = defineCollection({
-  loader: glob({ pattern: "**/[^_]*.md", base: "./src/content/pages" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    ogImage: z.string().optional(),
-    canonicalURL: z.string().optional(),
+  loader: glob({ pattern: '**/*.md', base: './' + BLOG_PATH, generateId: id }),
+  schema: ({ image }) => postSchema.extend({
+    pubDatetime: z.union([timestampSchema, z.date()]),
+    modDatetime: z.union([timestampSchema, z.date()]).optional(),
+    cover: image().optional(), ogImage: image().optional(),
   }),
 });
-
-export const collections = { posts, pages };
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects', generateId: id }),
+  schema: ({ image }) => projectSchema.extend({ cover: image().optional() }),
+});
+const pages = defineCollection({ loader: glob({ pattern: '**/*.md', base: './src/content/pages' }), schema: pageSchema });
+export const collections = { posts, projects, pages };
