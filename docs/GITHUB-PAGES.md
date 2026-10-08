@@ -8,21 +8,33 @@
 - 原有文章、项目、关于页、图片和模板保持不变。只在新分支增加部署流程及子路径兼容修改。
 - `main` 的提交及其 Cloudflare 工作流不变。不要为了部署 Pages 把本分支合并回 `main`。
 
-预期地址为 **https://scyolo.github.io/blog/**；这是部署目标，不代表已上线。
+站点地址为 **https://scyolo.github.io/blog/**。发布状态以 [专用分支的 GitHub Actions](https://github.com/scyolo/blog/actions/workflows/github-pages.yml?query=branch%3Acodex%2Fgithub-pages) 及其中的线上冒烟结果为准。
 
-## 当前账户限制
+## 当前部署配置
+
+2026-10-08，经仓库所有者明确授权，已完成：
+
+- 仓库 `scyolo/blog` 的可见性由 private 改为 **public**；未开通付费计划。
+- 公开前使用校验过发行文件 SHA-256 的 Gitleaks 8.30.1 扫描全部 25 个历史提交，未发现密钥泄漏。此结果不是对所有隐私内容的绝对保证。
+- GitHub Pages 使用 **GitHub Actions**（`build_type: workflow`），已强制 HTTPS。
+- `github-pages` 发布环境只允许 `codex/github-pages` 分支；已移除启用 Pages 时自动附带的 `main` 发布许可。
+- 默认分支仍为 `main`，`main` 的代码和提交指针保持不变。
+
+Pages 已启用不等同于发布成功；必须同时观察到专用工作流的构建校验、部署和线上版本冒烟成功。后续推送本分支将自动执行这一流程。
+
+## 首次私有仓库尝试（限制已解除）
 
 2026-10-08，通过已登录的仓库管理员账户实际调用 Pages 创建接口，GitHub 返回 HTTP 422：
 
 > Your current plan does not support GitHub Pages for this repository.
 
-当时账户为 Free，仓库 `scyolo/blog` 为 private。分支代码和部署配置可以保留在私有仓库中，但当前组合无法正式启用 GitHub Pages。此任务没有修改仓库可见性、开通付费计划或改动默认分支。
+当时账户为 Free，仓库 `scyolo/blog` 为 private，无法启用 Pages。这一限制已经通过所有者后续授权公开仓库而解除，不再是当前阻碍。首次运行中 verify 已通过，deploy 仅在读取未启用的 Pages 配置时失败；这不是构建或测试失败。
 
-继续上线前，由仓库所有者决定：把仓库改为公开，或使用支持私有仓库 Pages 的计划。**公开前应检查整个 Git 历史，而不只是当前文件，避免暴露历史密钥、草稿和私密材料。** 不要把私有源码仓库等同于私有网站；普通 Pages 站点是公开可访问的。
+**公开仓库包含整个 Git 历史，而不只是当前文件。** 后续提交仍应避免加入密钥、草稿中的私密材料和不宜公开的附件。普通 Pages 站点是公开可访问的，文章的 draft 标记也不会隐藏已经公开的 Git 源码。
 
 ## 一次性设置
 
-满足上述账户条件后：
+本仓库已完成公开、Pages Actions 和专用分支限制；以下保留配置与复现步骤：
 
 1. 打开仓库 **Settings → Pages**，把 **Build and deployment → Source** 设置为 **GitHub Actions**，不是从分支直接发布源码。
 2. 在 **Settings → Environments → github-pages** 检查发布分支限制。若有限制，只允许 `codex/github-pages`；不要保留只允许 `main` 的规则。
@@ -125,9 +137,9 @@ pnpm dev
 | 移动端 Lighthouse    | 首页和两篇文章各测 3 次；性能、无障碍、SEO 中位数均为 100，CLS 为 0                |
 | 安全审计             | 无未复核告警；保留原有 1 项未修补的受控例外，详见 `docs/SECURITY.md`，不等于零告警 |
 | 现有内容与主分支     | `src/content`、`src/assets`、`public`、`templates` 与原 `main` 完全相同            |
-| GitHub Pages 上线    | **未通过账户前置条件**；创建接口返回 422，不能声称已部署或已完成线上验收           |
+| 首次私有仓库启用     | 当时创建接口返回 422；目前已通过授权公开仓库解除，当前发布状态见本页 Actions 入口  |
 
-以上成绩来自本地环境，不冒充 GitHub 托管运行器或线上站点结果。账户条件满足后仍须查看实际 Actions 执行结果及线上冒烟。
+以上成绩记录首次本地验证，不冒充 GitHub 托管运行器或线上站点结果。当前账户条件已满足，实际发布仍以专用分支 Actions 执行结果及线上冒烟为准。
 
 ## 官方参考
 

@@ -2,13 +2,13 @@
 
 一个中文、静态、内容优先的个人博客。以 AstroPaper 为起点，使用 Astro、TypeScript 和 Tailwind；支持 Markdown、KaTeX、按需 Mermaid、中文 Pagefind、RSS 和暗色模式。
 
-> 工程实现与正式上线分开验收。随项目提供的样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。部署状态与已验证范围以 [验收报告](docs/VERIFICATION.md) 为准，不能仅凭 README 或绿色单元测试认定已经上线。
+> 工程实现与正式上线分开验收。随项目提供的样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。原工程验收基线见 [验收报告](docs/VERIFICATION.md)，本分支的 Pages 配置与实际发布状态见 [GitHub Pages 说明](docs/GITHUB-PAGES.md)。不能仅凭 README 或绿色单元测试认定已经上线。
 
 ## 当前分支：GitHub Pages
 
 `codex/github-pages` 从原 `main` 完整创建，保留现有内容，在独立分支上配置 GitHub Pages；不会改动 `main`。部署目标为 `https://scyolo.github.io/blog/`，参见 [GitHub Pages 设置与复现](docs/GITHUB-PAGES.md)。
 
-**尚未正式上线：** 2026-10-08 实际启用 Pages 时，GitHub 返回当前 Free 计划不支持此私有仓库。需要仓库所有者先决定公开仓库或使用支持的计划；本分支不会自动修改可见性或购买服务。下文保留的 Cloudflare 流程仍供原 `main` 使用。
+**GitHub Pages 已启用：** 2026-10-08 经仓库所有者明确授权，仓库已改为公开，Pages 使用 GitHub Actions，发布环境仅允许 `codex/github-pages` 分支；原先的私有仓库计划限制已解除。站点是否成功发布，以该分支最新 Actions 的部署及线上冒烟结果为准。未购买付费服务，也未改动默认分支；下文保留的 Cloudflare 流程仍供原 `main` 使用。
 
 ## 本地开始
 
