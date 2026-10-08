@@ -102,7 +102,8 @@ if (diagrams.length) {
         observer.unobserve(entry.target);
       }
     },
-    { rootMargin: "250px" }
+    // Heavy diagram work should not block reading before the figure is visible.
+    { rootMargin: "0px" }
   );
   diagrams.forEach(state => observer.observe(state.figure));
   document.addEventListener("theme-change", () =>

@@ -321,3 +321,20 @@ test("本地 PNG 和 WebP 实际加载且具有尺寸与替代文本", async ({ 
     expect(await image.getAttribute("height")).toBeTruthy();
   }
 });
+
+test("首屏外的架构图不提前加载运行时，进入视口后才渲染", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  const runtimeRequests: string[] = [];
+  page.on("request", request => {
+    if (/mermaid|flowDiagram/.test(request.url()))
+      runtimeRequests.push(request.url());
+  });
+  await page.goto("/posts/static-blog-architecture/");
+  const diagram = page.locator("figure[data-mermaid]").first();
+  expect((await diagram.boundingBox())!.y).toBeGreaterThan(800);
+  await page.waitForLoadState("networkidle");
+  expect(runtimeRequests).toEqual([]);
+  await diagram.scrollIntoViewIfNeeded();
+  await expect(diagram.locator("svg")).toBeVisible();
+  expect(runtimeRequests.length).toBeGreaterThan(0);
+});
