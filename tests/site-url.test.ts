@@ -10,7 +10,7 @@ it.each([
   "not-url",
   "ftp://example.com",
   "https://user:pass@example.com",
-  "https://example.com/blog/",
+  "https://example.com/blog//nested/",
   "https://example.com/?a=1",
   "https://example.com/#top",
 ])("拒绝不受支持的站点配置 %s", value =>
@@ -27,3 +27,12 @@ it.each([
 ])("生产不接受本地、明文或占位地址 %s", value =>
   expect(() => normalizeSiteUrl(value, true)).toThrow(/生产/)
 );
+
+it("GitHub Pages 项目地址保留子路径并规范化末尾斜杠", () => {
+  expect(normalizeSiteUrl("https://scyolo.github.io/blog", true)).toBe(
+    "https://scyolo.github.io/blog/"
+  );
+  expect(normalizeSiteUrl("https://scyolo.github.io/blog/", true)).toBe(
+    "https://scyolo.github.io/blog/"
+  );
+});

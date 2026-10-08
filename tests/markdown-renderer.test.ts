@@ -1,6 +1,7 @@
 import { beforeAll, expect, it } from "vitest";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import config from "../astro.config";
+import { remarkBlog } from "../src/lib/markdown";
 let renderer: Awaited<ReturnType<typeof createMarkdownProcessor>>;
 beforeAll(async () => {
   const options = (
@@ -58,4 +59,24 @@ it("每次渲染都拒绝原始 HTML 和远程图片", async () => {
   await expect(render("![图](https://example.com/remote.png)")).rejects.toThrow(
     /图片|本地/
   );
+});
+
+it("Markdown 站内链接支持 GitHub Pages 前缀，外链和锚点保持原样", async () => {
+  const prefixed = await createMarkdownProcessor({
+    remarkPlugins: [[remarkBlog, { base: "/blog/" }]],
+    syntaxHighlight: false,
+  });
+  const result = await prefixed.render(
+    "[文章](/posts/a/) [标签][tags] [锚点](#part) [外链](https://github.com/scyolo)\n\n[tags]: /tags/",
+    {
+      fileURL: new URL(
+        "../src/content/posts/technical-writing.md",
+        import.meta.url
+      ),
+    }
+  );
+  expect(result.code).toContain('href="/blog/posts/a/"');
+  expect(result.code).toContain('href="/blog/tags/"');
+  expect(result.code).toContain('href="#part"');
+  expect(result.code).toContain('href="https://github.com/scyolo"');
 });

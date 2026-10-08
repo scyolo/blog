@@ -43,6 +43,7 @@ it("配置只允许 main 的受控发布，且不接受空值或无效标识", (
     { CLOUDFLARE_ACCOUNT_ID: "bad" },
     { CLOUDFLARE_PROJECT_NAME: "bad project" },
     { GITHUB_REPOSITORY: "invalid" },
+    { SITE_URL: "https://blog.pages.dev/blog/" },
   ])
     expect(() => deploymentConfig({ ...env, ...change })).toThrow();
 });

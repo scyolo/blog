@@ -226,3 +226,44 @@ it("RSS 使用秒精度时仍接受有效的毫秒 ISO 发布时间", async () =
     })
   ).resolves.toMatchObject({ posts: 1 });
 });
+
+async function addPagesPrefix() {
+  const pagesSite = "https://scyolo.github.io/blog/";
+  for (const name of [
+    "index.html",
+    "posts/a/index.html",
+    "search/index.html",
+    "404.html",
+    "rss.xml",
+    "sitemap-index.xml",
+    "sitemap-0.xml",
+    "build-info.json",
+  ]) {
+    const content = await readFile(join(dir, name), "utf8");
+    await put(
+      name,
+      content
+        .replaceAll(site, pagesSite)
+        .replaceAll('href="/posts/', 'href="/blog/posts/')
+    );
+  }
+  // Pagefind stores paths relative to dist; the browser adds its configured baseUrl.
+  await put("pagefind/fragment/a.pf_fragment", fragment());
+  return pagesSite;
+}
+
+it("验证 GitHub Pages 子路径的页面、锚点、RSS、站点地图和搜索", async () => {
+  const siteUrl = await addPagesPrefix();
+  await expect(
+    verifyArtifact({ directory: dir, posts, siteUrl })
+  ).resolves.toMatchObject({ pages: 4, posts: 1, indexed: 1 });
+});
+
+it("子路径构建拒绝丢失 /blog/ 前缀的站内链接", async () => {
+  const siteUrl = await addPagesPrefix();
+  const home = await readFile(join(dir, "index.html"), "utf8");
+  await put("index.html", home.replace('href="/blog/posts/', 'href="/posts/'));
+  await expect(
+    verifyArtifact({ directory: dir, posts, siteUrl })
+  ).rejects.toThrow(/站点基础路径/);
+});
