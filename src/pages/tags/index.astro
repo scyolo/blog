@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getPosts } from "../../lib/site-content";
 import { groupTags } from "../../lib/lists";
@@ -14,7 +15,7 @@ const topics = groupTags(await getPosts());
   </header>
   <div class="topic-grid">
     {topics.map(topic => (
-      <a href={"/tags/" + topic.id + "/"}>
+      <a href={getAssetPath("/tags/" + topic.id + "/")}>
         <span>{topic.label}</span>
         <small>{topic.posts.length} 篇</small>
         <span aria-hidden="true">↗</span>

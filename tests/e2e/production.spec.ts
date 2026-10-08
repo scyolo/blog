@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readdirSync, readFileSync } from "node:fs";
+import { withBasePath } from "../../src/lib/site-url";
 const info = JSON.parse(readFileSync("dist/build-info.json", "utf8"));
+const urlPath = (value: string) =>
+  withBasePath(value, new URL(info.siteUrl).pathname);
 const slugs = readdirSync("dist/posts", { withFileTypes: true })
   .filter(entry => entry.isDirectory() && /^[a-z][a-z0-9-]*$/.test(entry.name))
   .map(entry => entry.name);
@@ -19,35 +22,49 @@ const routes = [
 
 test("正式产物的全部主要页面和真正的 404 可用", async ({ page }) => {
   for (const path of routes) {
-    expect((await page.goto(path))?.status(), path).toBe(200);
+    expect((await page.goto(urlPath(path)))?.status(), path).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      new URL(path, info.siteUrl).href
+      new URL(urlPath(path), info.siteUrl).href
     );
   }
-  expect((await page.goto("/__not_a_real_post__/"))?.status()).toBe(404);
+  expect((await page.goto(urlPath("/__not_a_real_post__/")))?.status()).toBe(
+    404
+  );
   await page.getByRole("link", { name: "回到首页", exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
 });
 
 test("真实内容可搜索，无文章时呈现空状态而不是索引导航", async ({ page }) => {
   if (!slugs.length) {
-    await page.goto("/search/");
+    await page.goto(urlPath("/search/"));
     await expect(
       page.getByRole("heading", { name: "还没有已发布文章。" })
     ).toBeVisible();
     await expect(page.getByRole("textbox")).toHaveCount(0);
     return;
   }
-  await page.goto("/posts/" + slugs[0] + "/");
+  await page.goto(urlPath("/posts/" + slugs[0] + "/"));
   const title = await page.getByRole("heading", { level: 1 }).innerText();
-  await page.goto("/search/");
+  await page.goto(urlPath("/search/"));
   await page.getByRole("textbox", { name: "搜索关键词" }).fill(title);
   await expect(page.locator(".pagefind-ui__results")).toContainText(title);
   await page.getByRole("textbox").fill("zzqv987654321nomatchingtoken");
   await expect(page.locator(".pagefind-ui__message")).toContainText(
     /未找到|没有|0/
+  );
+  expect(new URL(page.url()).pathname).toBe(urlPath("/search/"));
+  await page.getByRole("textbox", { name: "搜索关键词" }).fill(title);
+  const result = page.locator(".pagefind-ui__result-link").first();
+  await expect(result).toHaveAttribute(
+    "href",
+    urlPath("/posts/" + slugs[0] + "/")
+  );
+  await result.click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+  expect(new URL(page.url()).pathname).toBe(
+    urlPath("/posts/" + slugs[0] + "/")
   );
 });
 
@@ -59,7 +76,7 @@ for (const width of [360, 768, 1440])
       "/projects/",
       ...slugs.slice(0, 2).map(slug => "/posts/" + slug + "/"),
     ]) {
-      expect((await page.goto(path))?.status()).toBe(200);
+      expect((await page.goto(urlPath(path)))?.status()).toBe(200);
       expect(
         await page.evaluate(
           () =>
@@ -69,7 +86,7 @@ for (const width of [360, 768, 1440])
         path
       ).toBeLessThanOrEqual(1);
     }
-    await page.goto("/");
+    await page.goto(urlPath("/"));
     await page.keyboard.press("Tab");
     await expect(page.getByRole("link", { name: "跳转到正文" })).toBeFocused();
     await page.keyboard.press("Enter");
@@ -111,7 +128,7 @@ test("正式产物没有严重无障碍问题、第三方资源或未捕获异�
     "/search/",
     ...slugs.slice(0, 2).map(slug => "/posts/" + slug + "/"),
   ]) {
-    await page.goto(path);
+    await page.goto(urlPath(path));
     const result = await new AxeBuilder({ page }).analyze();
     expect(
       result.violations.filter(

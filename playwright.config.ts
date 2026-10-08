@@ -7,7 +7,10 @@ const astroPackage = JSON.parse(
   )
 );
 const port = Number(process.env.E2E_PORT ?? 4322);
-const baseURL = "http://127.0.0.1:" + port;
+const { siteUrl } = JSON.parse(
+  readFileSync(new URL("./dist/build-info.json", import.meta.url), "utf8")
+);
+const baseURL = "http://127.0.0.1:" + port + new URL(siteUrl).pathname;
 const astroBin = "./node_modules/astro/" + astroPackage.bin.astro;
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -42,6 +45,7 @@ export default defineConfig({
     },
   ],
   webServer: {
+    env: { SITE_URL: siteUrl, ASTRO_TELEMETRY_DISABLED: "1" },
     command:
       "node " +
       JSON.stringify(astroBin) +

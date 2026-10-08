@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import config from "../config";
 import { getPosts } from "../lib/site-content";
@@ -30,11 +31,12 @@ import "@pagefind/default-ui/css/ui.css";
     <div class="empty-state">
       <h2>还没有已发布文章。</h2>
       <p>新的记录发布后，就可以在这里搜索了。</p>
-      <a href="/posts/">浏览文章列表</a>
+      <a href={getAssetPath("/posts/")}>浏览文章列表</a>
     </div>
   )}
 </SiteLayout>
 <script>
+  import { getAssetPath } from "@/utils/withBase";
   const status = document.querySelector<HTMLElement>("#search-status");
   async function initSearch() {
     try {
@@ -42,7 +44,8 @@ import "@pagefind/default-ui/css/ui.css";
       const { PagefindUI } = await import("@pagefind/default-ui");
       const ui = new PagefindUI({
         element: "#pagefind-search",
-        baseUrl: "/",
+        baseUrl: import.meta.env.BASE_URL,
+        bundlePath: getAssetPath("/pagefind/"),
         showImages: false,
         showSubResults: true,
         translations: {
@@ -61,7 +64,7 @@ import "@pagefind/default-ui/css/ui.css";
           history.replaceState(
             null,
             "",
-            "/search/" + (term ? "?" + params.toString() : "")
+            getAssetPath("/search/") + (term ? "?" + params.toString() : "")
           );
           return term;
         },

@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import "@/styles/global.css";
@@ -32,14 +33,14 @@ const image = new URL(ogImage, Astro.site ?? Astro.url).href;
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f7f7f2" />
     {noindex && <meta name="robots" content="noindex,follow" />}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={getAssetPath("/favicon.svg")} />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href={getAssetPath("/sitemap-index.xml")} />
     <link
       rel="alternate"
       type="application/rss+xml"
       title={config.site.title}
-      href={new URL("/rss.xml", Astro.site).href}
+      href={new URL(getAssetPath("/rss.xml"), Astro.site).href}
     />
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={config.site.title} />

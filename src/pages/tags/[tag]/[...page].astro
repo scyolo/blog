@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import type { CollectionEntry } from "astro:content";
 import type { PageSlice } from "../../../lib/lists";
 import SiteLayout from "../../../layouts/SiteLayout.astro";
@@ -27,7 +28,7 @@ const { page, label, topicId } = Astro.props;
 
 <SiteLayout title={label + " · 标签 · " + config.site.title}>
   <header class="page-heading">
-    <a class="back-link" href="/tags/">
+    <a class="back-link" href={getAssetPath("/tags/")}>
       ← 所有标签
     </a>
     <h1>{label}</h1>

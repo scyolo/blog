@@ -131,6 +131,7 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
     new URL(info.siteUrl).href !== site.href
   )
     throw new Error("构建元数据无效或站点地址不匹配");
+  const publicUrl = path => new URL(path.replace(/^\/+/, ""), site);
   const visible = posts.filter(post =>
     isVisible(post.data, Date.parse(info.builtAt))
   );
@@ -157,7 +158,7 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
   function localFile(value, from, { resource = false, anchor = false } = {}) {
     let url;
     try {
-      url = new URL(value, new URL(from, site));
+      url = new URL(value, publicUrl(from));
     } catch {
       throw new Error(from + ": 无效链接 " + value);
     }
@@ -169,9 +170,11 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
       if (resource) throw new Error(from + ": 不允许第三方资源 " + value);
       return null;
     }
+    if (!url.pathname.startsWith(site.pathname))
+      throw new Error(from + ": 链接超出站点基础路径 " + value);
     let path;
     try {
-      path = decodeURIComponent(url.pathname).replace(/^\//, "");
+      path = decodeURIComponent(url.pathname.slice(site.pathname.length));
     } catch {
       throw new Error(from + ": 无效编码链接 " + value);
     }
@@ -207,13 +210,13 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
       throw new Error(path + ": 标题或描述元信息缺失");
     if (
       !document.canonical ||
-      (name !== "404.html" && document.canonical !== new URL(path, site).href)
+      (name !== "404.html" && document.canonical !== publicUrl(path).href)
     )
       throw new Error(path + ": canonical 不匹配");
     if (!meta("og:image")) throw new Error(path + ": 缺少分享图");
     localFile(meta("og:image"), path, { resource: true });
     if (!meta("robots")?.includes("noindex"))
-      indexable.push(new URL(path, site).href);
+      indexable.push(publicUrl(path).href);
     for (const node of document.nodes) {
       if (node.tagName === "a" && attr(node, "href"))
         localFile(attr(node, "href"), path, { anchor: true });
@@ -280,12 +283,12 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
   const items = array(xml("rss.xml").rss?.channel?.item);
   equalSet(
     items.map(item => item.link),
-    postRoutes.map(path => new URL(path, site).href),
+    postRoutes.map(path => publicUrl(path).href),
     "RSS 文章"
   );
   for (const post of visible) {
     const item = items.find(
-      item => item.link === new URL("/posts/" + post.data.slug + "/", site).href
+      item => item.link === publicUrl("/posts/" + post.data.slug + "/").href
     );
     if (
       item.title !== post.data.title ||

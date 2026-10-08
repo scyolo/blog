@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import type { CollectionEntry } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "../lib/lists";
@@ -13,7 +14,7 @@ const { post, eager = false } = Astro.props;
 <article class:list={["post-card", { "no-cover": !post.data.cover }]}>
   <a
     class="card-link"
-    href={"/posts/" + post.id + "/"}
+    href={getAssetPath("/posts/" + post.id + "/")}
     aria-label={post.data.title + (post.data.demo ? "（示例文章）" : "")}
   >
     {post.data.cover && (

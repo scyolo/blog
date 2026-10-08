@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import config from "../config";
 ---
@@ -11,7 +12,7 @@ import config from "../config";
     <p class="eyebrow">A PAGE YET TO BE WRITTEN</p>
     <h1>这一页还没有写下。</h1>
     <p>地址可能有误，或者这篇内容已经下架。</p>
-    <a class="text-link" href="/">
+    <a class="text-link" href={getAssetPath("/")}>
       回到首页
     </a>
   </section>

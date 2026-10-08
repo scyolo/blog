@@ -29,12 +29,15 @@ export function deploymentConfig(env) {
     throw new Error("无效 CLOUDFLARE_PROJECT_NAME");
   if (!/^[\w.-]+\/[\w.-]+$/.test(env.GITHUB_REPOSITORY))
     throw new Error("无效 GITHUB_REPOSITORY");
+  const siteUrl = normalizeSiteUrl(env.SITE_URL, true);
+  if (new URL(siteUrl).pathname !== "/")
+    throw new Error("Cloudflare Direct Upload 的 SITE_URL 必须是站点根地址");
   return {
     account: env.CLOUDFLARE_ACCOUNT_ID,
     project: env.CLOUDFLARE_PROJECT_NAME,
     repository: env.GITHUB_REPOSITORY,
     revision: env.GITHUB_SHA,
-    siteUrl: normalizeSiteUrl(env.SITE_URL, true),
+    siteUrl,
   };
 }
 

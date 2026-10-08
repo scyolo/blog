@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import { pageHref } from "../lib/lists";
 interface Props {
   base: string;
@@ -11,7 +12,7 @@ const { base, current, total } = Astro.props;
 {total > 1 && (
   <nav class="pagination" aria-label="文章分页">
     {current > 1 ? (
-      <a href={pageHref(base, current - 1)} rel="prev">
+      <a href={getAssetPath(pageHref(base, current - 1))} rel="prev">
         ← 上一页
       </a>
     ) : (
@@ -21,7 +22,7 @@ const { base, current, total } = Astro.props;
       第 {current} / {total} 页
     </span>
     {current < total ? (
-      <a href={pageHref(base, current + 1)} rel="next">
+      <a href={getAssetPath(pageHref(base, current + 1))} rel="next">
         下一页 →
       </a>
     ) : (

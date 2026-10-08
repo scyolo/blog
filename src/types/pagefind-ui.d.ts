@@ -2,6 +2,7 @@ declare module "@pagefind/default-ui" {
   export interface PagefindOptions {
     element: string;
     baseUrl?: string;
+    bundlePath?: string;
     showImages?: boolean;
     showSubResults?: boolean;
     translations?: Record<string, string>;

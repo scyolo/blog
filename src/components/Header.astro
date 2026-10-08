@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
 import Search from "@/assets/icons/IconSearch.svg";
 import Moon from "@/assets/icons/IconMoon.svg";
@@ -10,7 +11,8 @@ const navigation = [
   { href: "/archives/", label: "归档" },
   { href: "/about/", label: "关于" },
 ];
-const active = (href: string) => Astro.url.pathname.startsWith(href);
+const active = (href: string) =>
+  Astro.url.pathname.startsWith(getAssetPath(href));
 ---
 
 <a class="skip-link" href="#main-content">
@@ -18,7 +20,11 @@ const active = (href: string) => Astro.url.pathname.startsWith(href);
 </a>
 <header class="site-header">
   <div class="shell header-inner">
-    <a class="brand" href="/" aria-label={config.site.title + " 首页"}>
+    <a
+      class="brand"
+      href={getAssetPath("/")}
+      aria-label={config.site.title + " 首页"}
+    >
       <span class="brand-mark" aria-hidden="true">
         <i></i>
         <i></i>
@@ -32,7 +38,7 @@ const active = (href: string) => Astro.url.pathname.startsWith(href);
     <nav class="desktop-nav" aria-label="主导航">
       {navigation.map(item => (
         <a
-          href={item.href}
+          href={getAssetPath(item.href)}
           aria-current={active(item.href) ? "page" : undefined}
         >
           {item.label}
@@ -40,7 +46,11 @@ const active = (href: string) => Astro.url.pathname.startsWith(href);
       ))}
     </nav>
     <div class="header-actions">
-      <a class="icon-button" href="/search/" aria-label="搜索文章">
+      <a
+        class="icon-button"
+        href={getAssetPath("/search/")}
+        aria-label="搜索文章"
+      >
         <Search aria-hidden="true" />
       </a>
       <button
@@ -60,13 +70,13 @@ const active = (href: string) => Astro.url.pathname.startsWith(href);
         <nav aria-label="移动导航">
           {navigation.map(item => (
             <a
-              href={item.href}
+              href={getAssetPath(item.href)}
               aria-current={active(item.href) ? "page" : undefined}
             >
               {item.label}
             </a>
           ))}
-          <a href="/tags/">标签</a>
+          <a href={getAssetPath("/tags/")}>标签</a>
         </nav>
       </details>
     </div>

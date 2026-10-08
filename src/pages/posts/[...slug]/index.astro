@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 import { type CollectionEntry, render } from "astro:content";
 import { getImage } from "astro:assets";
 import SiteLayout from "../../../layouts/SiteLayout.astro";
@@ -36,8 +37,9 @@ const og =
           fit: "cover",
         })
       ).src
-    : "/default-og.png";
-const canonical = new URL("/posts/" + post.id + "/", Astro.site).href;
+    : getAssetPath("/default-og.png");
+const canonical = new URL(getAssetPath("/posts/" + post.id + "/"), Astro.site)
+  .href;
 const structured = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
@@ -79,11 +81,15 @@ const structured = {
   <div class:list={["article-layout", { "has-toc": hasToc }]}>
     <div class="article-main" data-pagefind-body>
       <header class="article-heading">
-        <a class="back-link" href="/posts/" data-pagefind-ignore>
+        <a
+          class="back-link"
+          href={getAssetPath("/posts/")}
+          data-pagefind-ignore
+        >
           ← 所有文章
         </a>
         <div class="article-meta" data-pagefind-ignore>
-          <a href={"/categories/" + post.data.category + "/"}>
+          <a href={getAssetPath("/categories/" + post.data.category + "/")}>
             {categories[post.data.category]}
           </a>
           <time datetime={post.data.pubDatetime.toISOString()}>
@@ -106,7 +112,7 @@ const structured = {
         <ul class="article-tags" aria-label="文章标签">
           {post.data.tags.map(tag => (
             <li>
-              <a href={"/tags/" + tagId(tag) + "/"}>{tag}</a>
+              <a href={getAssetPath("/tags/" + tagId(tag) + "/")}>{tag}</a>
             </li>
           ))}
         </ul>
@@ -116,7 +122,7 @@ const structured = {
       </footer>
       <nav class="adjacent-posts" aria-label="前后文章" data-pagefind-ignore>
         {older ? (
-          <a href={"/posts/" + older.id + "/"}>
+          <a href={getAssetPath("/posts/" + older.id + "/")}>
             <small>← 较早一篇</small>
             <span>{older.data.title}</span>
           </a>
@@ -124,7 +130,7 @@ const structured = {
           <span></span>
         )}
         {newer ? (
-          <a href={"/posts/" + newer.id + "/"}>
+          <a href={getAssetPath("/posts/" + newer.id + "/")}>
             <small>较新一篇 →</small>
             <span>{newer.data.title}</span>
           </a>

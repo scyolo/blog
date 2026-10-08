@@ -20,6 +20,7 @@ const debugPort = await freePort();
 const pkg = JSON.parse(
   await readFile("node_modules/astro/package.json", "utf8")
 );
+const { siteUrl } = JSON.parse(await readFile("dist/build-info.json", "utf8"));
 const server = spawn(
   process.execPath,
   [
@@ -33,7 +34,7 @@ const server = spawn(
   ],
   {
     stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" },
+    env: { ...process.env, SITE_URL: siteUrl, ASTRO_TELEMETRY_DISABLED: "1" },
   }
 );
 let serverLog = "";
@@ -44,12 +45,14 @@ server.stderr.on("data", bytes => {
   serverLog = (serverLog + bytes).slice(-6000);
 });
 const origin = "http://127.0.0.1:" + port;
+const baseURL = origin + new URL(siteUrl).pathname;
+const previewUrl = path => new URL(path.replace(/^\/+/, ""), baseURL).href;
 let browser;
 try {
   let ready = false;
   for (let attempt = 0; attempt < 60; attempt++) {
     try {
-      if ((await fetch(origin, { signal: AbortSignal.timeout(1000) })).ok) {
+      if ((await fetch(baseURL, { signal: AbortSignal.timeout(1000) })).ok) {
         ready = true;
         break;
       }
@@ -79,7 +82,7 @@ try {
   const runs = 3;
   for (const path of paths)
     for (let run = 1; run <= runs; run++) {
-      const result = await lighthouse(origin + path, {
+      const result = await lighthouse(previewUrl(path), {
         port: debugPort,
         logLevel: "error",
         output: "json",

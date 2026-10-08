@@ -1,13 +1,15 @@
 import { relative } from "node:path";
 import { validateMarkdownResources } from "./content-files";
 import { escapeHtml } from "./serialization";
+import { withBasePath } from "./site-url";
 type AstNode = {
   type: string;
   value?: string;
+  url?: string;
   lang?: string | null;
   children?: AstNode[];
 };
-export function remarkBlog() {
+export function remarkBlog({ base = "/" }: { base?: string } = {}) {
   return async (tree: AstNode, file: { path?: string; value: unknown }) => {
     const source = file.path
       ? relative(process.cwd(), file.path)
@@ -16,6 +18,12 @@ export function remarkBlog() {
     const transform = (parent: AstNode) => {
       if (!parent.children) return;
       parent.children = parent.children.map(node => {
+        if (
+          ["link", "definition"].includes(node.type) &&
+          node.url?.startsWith("/")
+        ) {
+          node.url = withBasePath(node.url, base);
+        }
         if (node.type === "code" && node.lang === "mermaid") {
           return {
             type: "html",

@@ -16,11 +16,14 @@ import config from "./astro-paper.config";
 import { fileURLToPath } from "node:url";
 import { readSiteContent } from "./src/lib/content-files";
 
+const base = new URL(config.site.url).pathname;
+
 export default defineConfig({
   output: "static",
   trailingSlash: "always",
   image: { domains: [], remotePatterns: [] },
   site: config.site.url,
+  base,
   prerenderConflictBehavior: "error",
   integrations: [
     {
@@ -44,7 +47,7 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkMath, remarkBlog],
+      remarkPlugins: [remarkMath, [remarkBlog, { base }]],
       rehypePlugins: [
         [rehypeKatex, { throwOnError: true, trust: false }],
         rehypeCallouts,

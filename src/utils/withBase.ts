@@ -1,16 +1,6 @@
-const base = import.meta.env.BASE_URL.replace(/\/+$/, "");
-const baseRoot = base === "" ? "/" : `${base}/`;
+import { withBasePath } from "../lib/site-url";
 
-/**
- * Prefix an asset/file path with the configured Astro `base`.
- * Does not force a trailing slash for empty paths.
- */
+/** Prefix a site-relative page or asset with Astro's configured deployment base. */
 export function getAssetPath(path: string): string {
-  // Strip leading slash to avoid double-slash when concatenating with baseRoot
-  const normalizedPath = path.replace(/^\/+/, "");
-
-  if (!normalizedPath) {
-    return base === "" ? "/" : base;
-  }
-  return baseRoot + normalizedPath;
+  return withBasePath(path, import.meta.env.BASE_URL);
 }

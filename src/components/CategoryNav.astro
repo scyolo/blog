@@ -1,4 +1,5 @@
 ---
+import { getAssetPath } from "@/utils/withBase";
 const items = [
   { href: "/posts/", label: "全部" },
   { href: "/categories/knowledge/", label: "知识笔记" },
@@ -9,9 +10,11 @@ const items = [
 <nav class="category-nav" aria-label="文章栏目">
   {items.map(item => (
     <a
-      href={item.href}
+      href={getAssetPath(item.href)}
       aria-current={
-        Astro.url.pathname.startsWith(item.href) ? "page" : undefined
+        Astro.url.pathname.startsWith(getAssetPath(item.href))
+          ? "page"
+          : undefined
       }
     >
       {item.label}
