@@ -16,7 +16,7 @@ it("RSS 保留最初发布时间和摘要，编辑旧文不会冒充重新发布
         title: "旧文",
         description: "摘要而非私有正文",
         draft: false,
-        pubDatetime: new Date("2020-01-01T00:00:00Z"),
+        pubDatetime: new Date("2020-01-01T00:00:00.123Z"),
         modDatetime: new Date("2022-01-01T00:00:00Z"),
       },
     },

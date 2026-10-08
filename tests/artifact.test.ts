@@ -212,3 +212,17 @@ it("文件系统链接不能混入发布产物", async () => {
     await unlink(link);
   }
 });
+
+it("RSS 使用秒精度时仍接受有效的毫秒 ISO 发布时间", async () => {
+  const precise = {
+    ...posts[0],
+    data: { ...data, pubDatetime: new Date("2020-01-01T00:00:00.123Z") },
+  };
+  await expect(
+    verifyArtifact({
+      directory: dir,
+      posts: [precise, ...posts.slice(1)],
+      siteUrl: site,
+    })
+  ).resolves.toMatchObject({ posts: 1 });
+});

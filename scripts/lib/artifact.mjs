@@ -290,7 +290,8 @@ export async function verifyArtifact({ directory, posts, siteUrl }) {
     if (
       item.title !== post.data.title ||
       item.description !== post.data.description ||
-      Date.parse(item.pubDate) !== post.data.pubDatetime.getTime()
+      Date.parse(item.pubDate) !==
+        Math.floor(post.data.pubDatetime.getTime() / 1000) * 1000
     )
       throw new Error("RSS 标题、摘要或发布时间错误: " + post.data.slug);
   }
