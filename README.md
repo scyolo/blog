@@ -2,13 +2,15 @@
 
 一个中文、静态、内容优先的个人博客。以 AstroPaper 为起点，使用 Astro、TypeScript 和 Tailwind；支持 Markdown、KaTeX、按需 Mermaid、中文 Pagefind、RSS 和暗色模式。
 
-> 工程实现与正式上线分开验收。当前公开样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。部署状态与已验证范围以 [验收报告](docs/VERIFICATION.md) 为准，不能仅凭 README 或绿色单元测试认定已经上线。
+> 工程实现与正式上线分开验收。随项目提供的样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。部署状态与已验证范围以 [验收报告](docs/VERIFICATION.md) 为准，不能仅凭 README 或绿色单元测试认定已经上线。
 
 ## 本地开始
 
 按 `.node-version` 安装 **Node 22.23.3**，使用 `package.json` 指定的 **pnpm 10.34.6**。不要关闭 TLS 校验或使用未固定的依赖安装方式。
 
 ```sh
+# 首次使用 pnpm 时，先在已安装指定 Node 的环境中安装固定版本
+npm install --global pnpm@10.34.6
 pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 pnpm dev

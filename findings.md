@@ -74,3 +74,6 @@
 - 首次 Linux CI 37728234045 全链检查成功，deploy 因缺配置跳过；架构文 Lighthouse 中位数 89 低于目标。本机详细报告显示未滚动便请求 Mermaid，相关 chunk 执行耗时约 611ms、TBT 301ms。新增 360×800 实际浏览器回归先确认图表在视口外却已经请求运行时，随后将 rootMargin 从 250px 收到 0px，只对可见图形执行重型渲染。
 - 失败演练 37728723347 确认在 Deliberate test failure drill 断言处失败，deploy skipped；不把这一结果称作 Cloudflare 线上回滚实测。
 - 49ac1b8 的完整 Git bundle 已校验并在空目录克隆，冻结锁文件离线安装、118 单元+6 基础、生产构建、产物审计和 6 项正式浏览器检查全部通过。
+
+- 性能补丁 Linux CI 37729671010 的架构文从 89 提升至 100；所有目标在固定条件下达标。该结果来自实际运行，不是调低阈值或仅看总绿灯。
+- 复核 GitHub repo-level Secrets/Variables 和 Environments 均为空，Wrangler 未登录。可独立执行的工程工作已经验证，剩余正式部署/网络/回滚/账户设置必须由真实账户配置解锁。
