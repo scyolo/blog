@@ -4,6 +4,12 @@
 
 > 工程实现与正式上线分开验收。随项目提供的样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。部署状态与已验证范围以 [验收报告](docs/VERIFICATION.md) 为准，不能仅凭 README 或绿色单元测试认定已经上线。
 
+## 当前分支：GitHub Pages
+
+`codex/github-pages` 从原 `main` 完整创建，保留现有内容，在独立分支上配置 GitHub Pages；不会改动 `main`。部署目标为 `https://scyolo.github.io/blog/`，参见 [GitHub Pages 设置与复现](docs/GITHUB-PAGES.md)。
+
+**尚未正式上线：** 2026-10-08 实际启用 Pages 时，GitHub 返回当前 Free 计划不支持此私有仓库。需要仓库所有者先决定公开仓库或使用支持的计划；本分支不会自动修改可见性或购买服务。下文保留的 Cloudflare 流程仍供原 `main` 使用。
+
 ## 本地开始
 
 按 `.node-version` 安装 **Node 22.23.3**，使用 `package.json` 指定的 **pnpm 10.34.6**。不要关闭 TLS 校验或使用未固定的依赖安装方式。

@@ -1,5 +1,7 @@
 # Cloudflare 受控发布
 
+> 本文保留原 `main` 的 Cloudflare 部署说明。当前 `codex/github-pages` 分支使用独立的 [GitHub Pages 工作流](GITHUB-PAGES.md)，不执行本文的 `pnpm deploy`。
+
 ## 状态与前置条件
 
 部署与工程检查是两个不同状态。没有凭据时 CI 可以完成工程验证，但部署 job 会跳过，并在运行摘要明确写出 **NOT configured**。这不等于已有正式网站。
