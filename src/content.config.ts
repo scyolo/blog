@@ -18,7 +18,6 @@ const posts = defineCollection({
       pubDatetime: z.union([timestampSchema, z.date()]),
       modDatetime: z.union([timestampSchema, z.date()]).optional(),
       cover: image().optional(),
-      ogImage: image().optional(),
     }),
 });
 const projects = defineCollection({

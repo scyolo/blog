@@ -7,11 +7,13 @@ export default defineConfig({
       "@/config": local("./tests/stubs/site-config.ts"),
       "@/content.config": local("./tests/stubs/content-config.ts"),
       "astro:i18n": local("./tests/stubs/astro-i18n.ts"),
+      "astro:content": local("./tests/stubs/astro-content.ts"),
       "@": local("./src"),
     },
   },
   test: {
     include: ["tests/**/*.test.ts"],
+    setupFiles: ["./tests/setup.ts"],
     coverage: {
       provider: "v8",
       include: [

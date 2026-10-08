@@ -22,25 +22,25 @@
     "audit:security": "node scripts/audit.mjs",
     "test:build-contract": "node --test tests/build-contract.node.mjs",
     "validate:content": "node scripts/validate-content.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify:artifact": "node scripts/verify-artifact.mjs",
+    "artifact:seal": "node scripts/artifact-manifest.mjs seal",
+    "artifact:check": "node scripts/artifact-manifest.mjs check",
+    "deploy": "node scripts/deploy.mjs",
+    "test:performance": "node scripts/performance.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.19",
     "@astrojs/sitemap": "3.7.4",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.3.5",
-    "dayjs": "^1.11.23",
-    "katex": "0.16.47",
-    "lodash.kebabcase": "^4.1.1",
+    "katex": "0.18.2",
     "mermaid": "12.1.0",
     "rehype-callouts": "^2.2.0",
     "rehype-katex": "7.0.1",
-    "remark-collapse": "^0.1.2",
     "remark-math": "6.0.0",
     "remark-parse": "11.0.0",
-    "remark-toc": "^9.0.0",
     "sharp": "0.35.5",
-    "slugify": "^1.6.9",
     "tailwindcss": "4.3.3",
     "unified": "11.0.5",
     "yaml": "2.9.1"
@@ -52,8 +52,6 @@
     "@pagefind/default-ui": "^1.5.2",
     "@playwright/test": "1.63.0",
     "@shikijs/transformers": "^4.4.3",
-    "@tailwindcss/typography": "0.5.20",
-    "@types/lodash.kebabcase": "^4.1.9",
     "@typescript-eslint/parser": "8.71.0",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
@@ -63,8 +61,20 @@
     "prettier-plugin-astro": "1.1.0",
     "prettier-plugin-tailwindcss": "0.8.1",
     "typescript": "^6.0.3",
-    "vitest": "5.0.3"
+    "vitest": "5.0.3",
+    "parse5": "8.0.1",
+    "fast-xml-parser": "5.11.2",
+    "wrangler": "4.148.0",
+    "lighthouse": "13.5.0",
+    "fast-xml-validator": "1.4.2"
   },
   "private": true,
-  "packageManager": "pnpm@10.34.6"
+  "packageManager": "pnpm@10.34.6",
+  "pnpm": {
+    "overrides": {
+      "katex": "0.18.2",
+      "sharp": "0.35.5",
+      "fast-xml-parser": "5.11.2"
+    }
+  }
 }

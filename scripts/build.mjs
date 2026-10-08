@@ -1,22 +1,13 @@
+import { cleanBuildOutputs } from "./lib/build-cleanup.mjs";
 import { spawn } from "node:child_process";
-import { readFile, rm, lstat } from "node:fs/promises";
-import { dirname, resolve, relative, isAbsolute } from "node:path";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readSiteContent } from "../src/lib/content-files.ts";
+import { isVisible } from "../src/lib/publication.ts";
+import { normalizeSiteUrl } from "../src/lib/site-url.ts";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../", import.meta.url));
-// Only fixed generated directories may be cleaned; never follow workspace symlinks.
-for (const name of ["dist", ".astro", "public/pagefind"]) {
-  const target = resolve(root, name);
-  const rel = relative(root, target);
-  if (!rel || rel.startsWith("..") || isAbsolute(rel))
-    throw new Error("Unsafe build cleanup path");
-  const entry = await lstat(target).catch(error => {
-    if (error.code !== "ENOENT") throw error;
-    return null;
-  });
-  if (entry?.isSymbolicLink())
-    throw new Error("Refusing to clean a symlink: " + target);
-  await rm(target, { recursive: true, force: true });
-}
+await cleanBuildOutputs(root);
 const env = {
   ...process.env,
   ASTRO_TELEMETRY_DISABLED: "1",
@@ -44,4 +35,38 @@ async function runBin(name, args) {
 }
 await runBin("astro", ["check"]);
 await runBin("astro", ["build"]);
-await runBin("pagefind", ["--site", "dist"]);
+const content = await readSiteContent(root);
+const published = content.posts.filter(post =>
+  isVisible(post.data, Date.parse(env.BUILD_TIMESTAMP))
+);
+if (published.length) {
+  await runBin("pagefind", [
+    "--site",
+    "dist",
+    "--root-selector",
+    "[data-pagefind-body]",
+  ]);
+} else {
+  // Pagefind exits nonzero with no documents; an empty site must not index navigation.
+  const pagefind = JSON.parse(
+    await readFile(resolve(root, "node_modules/pagefind/package.json"), "utf8")
+  );
+  await mkdir(resolve(root, "dist/pagefind"), { recursive: true });
+  await writeFile(
+    resolve(root, "dist/pagefind/pagefind-entry.json"),
+    JSON.stringify({ version: pagefind.version, languages: {}, empty: true }) +
+      "\n"
+  );
+  process.stdout.write(
+    "No published articles: search disabled; empty index descriptor written.\n"
+  );
+}
+await writeFile(
+  resolve(root, "dist/build-info.json"),
+  JSON.stringify({
+    version: 1,
+    revision: process.env.GITHUB_SHA ?? "local",
+    builtAt: env.BUILD_TIMESTAMP,
+    siteUrl: normalizeSiteUrl(process.env.SITE_URL),
+  }) + "\n"
+);

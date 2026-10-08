@@ -32,8 +32,7 @@ export default defineConfig({
       },
     },
     sitemap({
-      filter: page =>
-        config.features?.showArchives !== false || !page.endsWith("/archives/"),
+      filter: page => !/(?:\/search\/|\/404(?:\/|\.html))$/.test(page),
     }),
   ],
   i18n: {

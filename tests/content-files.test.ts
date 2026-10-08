@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  writeFile,
+  rm,
+  symlink,
+  unlink,
+} from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { stringify } from "yaml";
 import { readSiteContent } from "../src/lib/content-files";
@@ -88,4 +95,43 @@ it("页面和项目也使用真实文件校验", async () => {
   const result = await readSiteContent(dir);
   expect(result.pages).toHaveLength(1);
   expect(result.projects).toHaveLength(1);
+});
+
+it("拒绝无效页面元数据", async () => {
+  await put("src/content/pages/about.md", '---\ntitle: ""\n---\n正文');
+  await expect(readSiteContent(dir)).rejects.toThrow(/about.md/);
+});
+it("拒绝内容目录链接，避免扫描意外位置", async () => {
+  const target = join(dir, "elsewhere");
+  await mkdir(target);
+  await mkdir(join(dir, "src/content"), { recursive: true });
+  const link = join(dir, "src/content/posts");
+  await symlink(target, link, "junction");
+  try {
+    await expect(readSiteContent(dir)).rejects.toThrow(/符号链接/);
+  } finally {
+    await unlink(link);
+  }
+});
+it("拒绝通过资源目录链接逃出本项目", async () => {
+  const external = await mkdtemp(resolve(".cache/outside-"));
+  try {
+    await writeFile(join(external, "x.svg"), "<svg/>");
+    await mkdir(join(dir, "src/assets"), { recursive: true });
+    const link = join(dir, "src/assets/linked");
+    await symlink(external, link, "junction");
+    try {
+      await put(
+        "src/content/posts/a.md",
+        post({}, "![图](../../assets/linked/x.svg)")
+      );
+      await expect(readSiteContent(dir)).rejects.toThrow(/超出/);
+    } finally {
+      await unlink(link);
+    }
+  } finally {
+    if (!resolve(external).startsWith(resolve(".cache/outside-")))
+      throw Error("Unsafe fixture");
+    await rm(external, { recursive: true, force: true });
+  }
 });

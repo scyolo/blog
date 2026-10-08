@@ -1,3 +1,7 @@
 onlyBuiltDependencies:
   - esbuild
   - sharp
+
+# Pages only uploads static assets; local Workers execution is not enabled.
+ignoredBuiltDependencies:
+  - workerd

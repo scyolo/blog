@@ -20,12 +20,12 @@ export const localImageSchema = z
     "图片必须是无查询参数的相对本地文件路径"
   );
 const text = z.string().trim().min(1);
-const httpUrl = z
-  .url()
-  .refine(
-    value => ["https:", "http:"].includes(new URL(value).protocol),
-    "链接只允许 HTTP(S)"
+const httpUrl = z.url().refine(value => {
+  const url = new URL(value);
+  return (
+    ["https:", "http:"].includes(url.protocol) && !url.username && !url.password
   );
+}, "链接只允许无用户名和密码的 HTTP(S)");
 const tags = z
   .array(text)
   .default([])
@@ -44,12 +44,6 @@ export const postSchema = z
     cover: localImageSchema.optional(),
     author: text.default("scyolo"),
     demo: z.boolean().default(false),
-    // Retained until upstream presentation components have been replaced.
-    featured: z.boolean().optional(),
-    ogImage: localImageSchema.optional(),
-    canonicalURL: httpUrl.optional(),
-    hideEditPost: z.boolean().optional(),
-    timezone: z.string().optional(),
   })
   .strict();
 

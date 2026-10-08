@@ -43,3 +43,24 @@ category 只使用 knowledge（知识笔记）或 essay（随笔）。tags 用�
 更新正文时保留 slug，需要时填写带时区的 modDatetime。修改旧文不会把它变成一篇新发布文章。
 
 普通下架可以改回 draft: true 后重新发布。历史部署、RSS 客户端、搜索缓存和读者副本可能仍保留旧内容；敏感撤回需要额外检查历史部署与公开附件，不能承诺清除所有外部副本。回滚前排除含有已撤回内容的旧版本。
+
+## 项目、个人信息与示例替换
+
+从 templates/project.md 复制到 src/content/projects/，修改唯一 slug、标题、简介、techStack。repoUrl/demoUrl/cover 都是可选字段；只填写真实、可公开的链接。私有 GitHub 仓库的链接对未授权读者可能不可用，不要把它当作公开演示地址。
+
+关于页来自 src/content/pages/about.md；联系入口来自 astro-paper.config.ts 的 socials。没有邮箱时不预填假的地址，按需要添加真实 mailto 链接。
+
+初始三篇文章是明确标注的演示内容，可删除或改为草稿。固定功能验收样文保存在 tests/fixtures，并只复制到隔离测试目录；最终站点校验不要求保留它们。不要直接编辑测试 fixtures 来发表文章。空文章/空项目具有明确空状态。
+
+## 从模板到上线的完整顺序
+
+1. 复制模板并修改元数据，先保持 draft: true。
+2. pnpm dev 预览；草稿和未来文章在本地可见，确认正文与附件可以公开。
+3. 用真实时间填写 pubDatetime；不要沿用模板的旧日期。改为 draft: false。
+4. pnpm validate:content、pnpm test、pnpm build、pnpm verify:artifact、pnpm test:e2e；用 pnpm preview 再看生产索引。
+5. git diff 复核，提交并正常推送 main，等待 Actions 的验证与部署。
+6. 正式地址、RSS、搜索和移动端均检查后，才认为这篇文章发布完成。
+
+新增未知字段、缺失 draft、重复 slug、非法日期/图片路径等错误会带源文件路径返回。不要通过删测试或关闭校验来绕过。
+
+公开后修改标题或移动文件不会改变 URL。移动文件时仍需调整图片相对路径。原则上不改 slug；确需迁移，更新内部链接并通过 Cloudflare 的 public/_redirects 维护旧地址到新地址的 301，同时做线上重定向验收。Astro 本地预览不模拟 Cloudflare 的 _headers/_redirects 规则。

@@ -103,6 +103,11 @@ describe("项目集合", () => {
     expect(() =>
       validateProjects([project({ repoUrl: "javascript:alert(1)" })])
     ).toThrow();
+    expect(() =>
+      validateProjects([
+        project({ repoUrl: "https://user:password@example.com" }),
+      ])
+    ).toThrow(/用户名|密码/);
     expect(() => validateProjects([project({ draft: undefined })])).toThrow();
     expect(() =>
       validateProjects([project(), { ...project(), source: "duplicate.md" }])

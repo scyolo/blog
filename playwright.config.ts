@@ -6,9 +6,15 @@ const astroPackage = JSON.parse(
     "utf8"
   )
 );
+const port = Number(process.env.E2E_PORT ?? 4322);
+const baseURL = "http://127.0.0.1:" + port;
 const astroBin = "./node_modules/astro/" + astroPackage.bin.astro;
 export default defineConfig({
   testDir: "./tests/e2e",
+  testMatch:
+    process.env.E2E_MODE === "fixture"
+      ? "reading.spec.ts"
+      : "production.spec.ts",
   fullyParallel: false,
   workers: 1,
   retries: 0,
@@ -20,7 +26,7 @@ export default defineConfig({
     ["html", { outputFolder: "output/playwright/report", open: "never" }],
   ],
   use: {
-    baseURL: "http://127.0.0.1:4322",
+    baseURL,
     headless: true,
     colorScheme: "light",
     trace: "retain-on-failure",
@@ -39,8 +45,9 @@ export default defineConfig({
     command:
       "node " +
       JSON.stringify(astroBin) +
-      " preview --ignore-lock --host 127.0.0.1 --port 4322",
-    url: "http://127.0.0.1:4322",
+      " preview --ignore-lock --host 127.0.0.1 --port " +
+      port,
+    url: baseURL,
     reuseExistingServer: false,
     timeout: 30000,
   },

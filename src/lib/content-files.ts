@@ -100,7 +100,6 @@ async function validateResources(
   const refs = [
     ...imageReferences(record.body, record.source),
     metadata.cover,
-    metadata.ogImage,
   ].filter((value): value is string => typeof value === "string");
   const assets = [];
   for (const ref of refs) {

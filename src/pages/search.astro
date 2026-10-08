@@ -1,6 +1,8 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
 import config from "../config";
+import { getPosts } from "../lib/site-content";
+const hasPosts = (await getPosts()).length > 0;
 import "@pagefind/default-ui/css/ui.css";
 ---
 
@@ -14,12 +16,23 @@ import "@pagefind/default-ui/css/ui.css";
     <h1>搜索</h1>
     <p>输入一个关键词，寻找相关的文章。</p>
   </header>
-  <div class="search-shell">
-    <div id="pagefind-search"></div>
-    <p id="search-status" role="status">
-      正在准备本地搜索索引…
-    </p>
-  </div>
+  {hasPosts ? (
+    <div class="search-shell">
+      <label id="search-label" class="search-label" for="blog-search-input">
+        搜索关键词
+      </label>
+      <div id="pagefind-search"></div>
+      <p id="search-status" role="status">
+        正在准备本地搜索索引…
+      </p>
+    </div>
+  ) : (
+    <div class="empty-state">
+      <h2>还没有已发布文章。</h2>
+      <p>新的记录发布后，就可以在这里搜索了。</p>
+      <a href="/posts/">浏览文章列表</a>
+    </div>
+  )}
 </SiteLayout>
 <script>
   const status = document.querySelector<HTMLElement>("#search-status");
@@ -53,6 +66,13 @@ import "@pagefind/default-ui/css/ui.css";
           return term;
         },
       });
+      const input = document.querySelector<HTMLInputElement>(
+        "#pagefind-search input"
+      );
+      if (input) {
+        input.id = "blog-search-input";
+        input.setAttribute("aria-labelledby", "search-label");
+      }
       if (status) status.hidden = true;
       if (initialQuery) ui.triggerSearch(initialQuery);
     } catch {
@@ -61,11 +81,11 @@ import "@pagefind/default-ui/css/ui.css";
           "搜索索引暂时不可用。本地开发请先运行 pnpm build，再使用 pnpm preview。";
     }
   }
-  if (import.meta.env.DEV) {
+  if (document.querySelector("#pagefind-search") && import.meta.env.DEV) {
     if (status)
       status.textContent =
         "搜索使用生产索引，请先 pnpm build，再使用 pnpm preview。";
-  } else {
+  } else if (document.querySelector("#pagefind-search")) {
     initSearch();
   }
 </script>

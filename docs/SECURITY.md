@@ -18,3 +18,12 @@
 - 草稿、附件、历史部署撤回的产品边界见项目计划；内容保护实现与验收尚在进行中，不将仓库私有当作网站访问控制。
 
 审计门禁另外核对：汇总计数与明细非空状态一致；例外只适用于仍无补丁、严重级别未变化的问题。到期时间显式使用北京时间 ISO 时间戳，不能依赖 CI 主机时区。格式与审计测试均纳入正常检查范围。
+
+## 2026-10-08 安全复核
+
+- 原对话结束后出现的 KaTeX 公告 GHSA-238p-pmpm-9mq7：将直接及 Mermaid/remark/rehype 路径统一到已修复的 0.18.2，保留 trust:false。
+- 删除未使用的旧 Typography/slugify/dayjs/remark 插件与组件链，移除其旧 postcss-selector-parser 路径，不扩大例外。
+- fast-xml-parser 固定为 5.11.2，并使用独立 SyntaxValidator 做严格 XML 检查；sharp 所有路径统一到 0.35.5，修复 Wrangler/miniflare 的旧传递版本。
+- 当前 audit:security 曾验证为 0 未审查、1 已限定且仍未修复；最终报告以最终锁文件再审计为准，绝不称零漏洞。
+- 部署前检查完整文件摘要、提交/站点身份、Cloudflare 项目类型和最新 main；注入的失败回归证明失败时不调用上传函数。云端实测状态另列，不用 mock 冒充实际部署。
+- public/_headers 提供基础内容类型/来源/嵌入策略和 build-info 不缓存；这里只是基础策略，不声称实现了完整严格脚本 CSP。规则效果需正式 Cloudflare 站点验证。

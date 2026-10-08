@@ -10,3 +10,5 @@ coverage/
 public/pagefind/
 
 output/playwright/
+
+.wrangler/
