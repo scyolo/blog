@@ -3,6 +3,7 @@ import { resolve, relative, dirname, isAbsolute, sep } from "node:path";
 import { parseDocument } from "yaml";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
+import { remarkObsidian } from "../writer/markdown.ts";
 import {
   localImageSchema,
   pageSchema,
@@ -70,6 +71,7 @@ async function recordsIn(root: string, folder: string): Promise<RawRecord[]> {
 
 export function imageReferences(body: string, source: string): string[] {
   const tree = markdown.parse(body) as unknown as SyntaxNode;
+  remarkObsidian()(tree);
   const nodes: SyntaxNode[] = [];
   const visit = (node: SyntaxNode) => {
     nodes.push(node);

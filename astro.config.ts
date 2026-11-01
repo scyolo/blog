@@ -5,6 +5,8 @@ import { unified } from "@astrojs/markdown-remark";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { remarkBlog } from "./src/lib/markdown";
+import { remarkObsidian } from "./src/writer/markdown";
+import { rehypeTaskLabels } from "./src/writer/accessibility";
 import rehypeCallouts from "rehype-callouts";
 import {
   transformerNotationDiff,
@@ -35,7 +37,8 @@ export default defineConfig({
       },
     },
     sitemap({
-      filter: page => !/(?:\/search\/|\/404(?:\/|\.html))$/.test(page),
+      filter: page =>
+        !/(?:\/search\/|\/write\/|\/404(?:\/|\.html))$/.test(page),
     }),
   ],
   i18n: {
@@ -47,10 +50,11 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkMath, [remarkBlog, { base }]],
+      remarkPlugins: [remarkMath, remarkObsidian, [remarkBlog, { base }]],
       rehypePlugins: [
         [rehypeKatex, { throwOnError: true, trust: false }],
         rehypeCallouts,
+        rehypeTaskLabels,
       ],
     }),
     shikiConfig: {

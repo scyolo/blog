@@ -1,6 +1,8 @@
 # 行间 · scyolo
 
-一个中文、静态、内容优先的个人博客。以 AstroPaper 为起点，使用 Astro、TypeScript 和 Tailwind；支持 Markdown、KaTeX、按需 Mermaid、中文 Pagefind、RSS 和暗色模式。
+一个中文、静态、内容优先的个人博客。以 AstroPaper 为起点，使用 Astro、TypeScript 和 Tailwind；支持站内 Markdown 写作与 GitHub 发布、KaTeX、按需 Mermaid、中文 Pagefind、RSS 和暗色模式。
+
+站点使用 GitHub Pages：**https://scyolo.github.io/blog/**，写作台位于 **https://scyolo.github.io/blog/write/**。发布分支是 `codex/github-pages`，现有 `main` 保留原来的部署约定。首次在线发布时，在写作台连接仅授权本仓库的 GitHub 细粒度访问令牌；令牌只在当前标签页内存中使用，不存入浏览器存储或源码。具体操作见 [写作说明](docs/WRITING.md)。
 
 > 工程实现与正式上线分开验收。随项目提供的样文均标记为示例，不代表作者经历；真实内容可全部替换或删除。原工程验收基线见 [验收报告](docs/VERIFICATION.md)，本分支的 Pages 配置与实际发布状态见 [GitHub Pages 说明](docs/GITHUB-PAGES.md)。不能仅凭 README 或绿色单元测试认定已经上线。
 
@@ -74,7 +76,7 @@ Windows/Linux 使用同一锁文件。CI 执行完整检查，最终 dist 只构
 - 不接收不可信投稿，不支持 MDX 或原始 HTML；图片必须是本地、可信、可公开素材。
 - 草稿和未来文章不会进入生产页面、RSS、标签、归档、站点地图及搜索；未来时间到达后仍需重新构建。
 - 删掉全部样文不会破坏发布检查：固定技术样文保存在 `tests/fixtures/`，仅用于隔离测试，正式产物按真实内容验收。
-- 没有数据库、账号、评论、统计或业务 API；不默认购买域名或开通付费功能。
+- 没有自建数据库、服务端账号、评论或统计。作者使用自己的 GitHub 授权直接提交文章，Pages 仍是静态站点；不需要 Cloudflare 或付费服务。
 
 ## 来源与许可
 

@@ -18,6 +18,7 @@ export default defineConfig({
       provider: "v8",
       include: [
         "src/lib/**/*.{ts,mjs}",
+        "src/writer/**/*.ts",
         "src/utils/postFilter.ts",
         "src/utils/getPostPaths.ts",
         "src/utils/getSortedPosts.ts",

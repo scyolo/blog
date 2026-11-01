@@ -46,6 +46,7 @@ before(async () => {
     "src",
     "templates",
     "tests/e2e",
+    "tests/helpers",
     "playwright.config.ts",
     "public",
     "scripts",

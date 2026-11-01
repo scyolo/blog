@@ -1,5 +1,15 @@
 # 内容与依赖安全记录
 
+## 2026-11-01 写作台复核
+
+- 本轮锁文件的 `pnpm audit:security` 返回 **0 未审查、0 已审查且仍未修复**；下面的 2026-10-03 / 2026-10-08 告警描述为历史记录。
+- `http-cache-semantics` 已解析至 4.3.0，旧的 4.2.0 例外已删除，`security-exceptions.json` 当前为空。
+- Pages 仍是静态托管。作者的细粒度 GitHub 令牌只在当前标签页内存中使用，只发送至 GitHub API；不保存到 localStorage、sessionStorage、导出文件或仓库。浏览器刷新或断开连接清除当前授权。
+- Markdown 预览使用语法树解析与 HTML 清理；KaTeX `trust:false`，Mermaid `securityLevel:strict`，远程图片不加载。文章构建继续拒绝原始 HTML 与越界资源。预览和正式文章共用双链、高亮、任务列表无障碍处理。
+- 每次写入重新读取分支与文章版本，检查 slug、正文、元数据、图片、文件 SHA 和目标目录；用 GitHub 的非强制分支更新防止并发覆盖。这里的浏览器检查改善反馈，GitHub 自身的仓库权限才是写入授权边界。
+- 公开仓库中的草稿原文不受 `draft` 保护。仓库草稿和下架操作有独立确认，默认自动保存仍只在本机。
+- GitHub Pages 不执行 Cloudflare `_headers`。本轮不声称获得 Cloudflare 响应头或完整严格 CSP 的保护。
+
 ## 尚未修复但已限定评估范围的上游告警
 
 - 公告：https://github.com/advisories/GHSA-ch52-4w7c-c8xp

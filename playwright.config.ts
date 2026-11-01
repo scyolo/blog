@@ -17,7 +17,7 @@ export default defineConfig({
   testMatch:
     process.env.E2E_MODE === "fixture"
       ? "reading.spec.ts"
-      : "production.spec.ts",
+      : ["production.spec.ts", "writer.spec.ts"],
   fullyParallel: false,
   workers: 1,
   retries: 0,

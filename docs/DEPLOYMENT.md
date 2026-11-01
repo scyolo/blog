@@ -1,5 +1,7 @@
 # Cloudflare 受控发布
 
+当前 `codex/github-pages` 分支使用 [GitHub Pages 部署](GITHUB-PAGES.md)，无需本页的 Cloudflare 配置。本文保留原 `main` 的 Cloudflare 方案，不是写作台的上线前置条件。
+
 > 本文保留原 `main` 的 Cloudflare 部署说明。当前 `codex/github-pages` 分支使用独立的 [GitHub Pages 工作流](GITHUB-PAGES.md)，不执行本文的 `pnpm deploy`。
 
 ## 状态与前置条件

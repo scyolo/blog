@@ -1,0 +1,513 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import "katex/dist/katex.min.css";
+import { jsonForScript } from "../lib/serialization";
+import {
+  writerRepository,
+  writerBranch,
+  writerWorkflow,
+} from "../writer/config";
+const imageModules = import.meta.glob<string>(
+  "../assets/**/*.{png,jpg,jpeg,webp,gif,avif,svg}",
+  { eager: true, query: "?url", import: "default" }
+);
+const assets = Object.fromEntries(
+  Object.entries(imageModules).map(([path, image]) => [
+    path.replace("../assets/", "src/assets/"),
+    image,
+  ])
+);
+const tokenSetup =
+  "https://github.com/settings/personal-access-tokens/new?name=blog-writer&description=Publish+my+blog&target_name=scyolo&contents=write&actions=read";
+---
+
+<SiteLayout
+  title="写作台 · 行间"
+  description="用 Markdown 写作、预览，直接发布到自己的博客。"
+  noindex={true}
+  class="writer-shell"
+>
+  <Fragment slot="head">
+    <meta name="referrer" content="no-referrer" />
+  </Fragment>
+  <section class="writer-page" aria-labelledby="writer-title" data-writer>
+    <header class="writer-intro">
+      <div>
+        <p class="eyebrow">WRITER'S DESK / MARKDOWN</p>
+        <h1 id="writer-title">把想法写成一篇文章。</h1>
+        <p>
+          熟悉的 Markdown，安静的写作空间。草稿自动保存在本机，连接 GitHub
+          后就能在这里发布。
+        </p>
+      </div>
+      <div class="writer-intro-note">
+        <span class="writer-note-dot" aria-hidden="true"></span>
+        <span data-connection-status>本地写作模式</span>
+        <button class="writer-text-button" type="button" data-connect>
+          连接 GitHub ↗
+        </button>
+      </div>
+    </header>
+    <div class="writer-toolbar" aria-label="写作操作">
+      <div class="writer-toolbar-group">
+        <button
+          class="writer-button writer-button-primary"
+          type="button"
+          data-save
+        >
+          保存草稿
+        </button>
+        <button class="writer-button" type="button" data-export>
+          导出 Markdown
+        </button>
+        <button
+          class="writer-button writer-button-accent"
+          type="button"
+          data-publish
+        >
+          发布文章 <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <div class="writer-toolbar-group writer-toolbar-secondary">
+        <button
+          class="writer-button writer-mobile-details"
+          type="button"
+          data-details
+        >
+          文章信息
+        </button>
+        <button class="writer-button" type="button" data-preview-mode>
+          阅读预览
+        </button>
+        <button class="writer-button" type="button" data-new>
+          ＋ 新文章
+        </button>
+      </div>
+    </div>
+    <div class="writer-feedback" role="status" aria-live="polite">
+      <span class="writer-feedback-dot" aria-hidden="true"></span>
+      <span data-feedback-text>准备开始写作</span>
+      <span class="writer-feedback-meta" data-save-time></span>
+    </div>
+    <div
+      class="writer-publication"
+      data-publication
+      hidden
+      role="status"
+      aria-live="polite"
+    >
+      <span data-publication-text></span>
+      <a data-deploy-link target="_blank" rel="noopener noreferrer" hidden>
+        查看部署进度 ↗
+      </a>
+      <a data-article-link target="_blank" rel="noopener noreferrer" hidden>
+        打开文章 ↗
+      </a>
+    </div>
+    <div class="writer-layout">
+      <aside class="writer-sidebar" aria-label="文章信息">
+        <section class="writer-sidebar-card">
+          <div class="writer-card-heading">
+            <div>
+              <p class="eyebrow">01 / DETAILS</p>
+              <h2>文章信息</h2>
+            </div>
+            <span class="writer-card-index">Aa</span>
+          </div>
+          <label class="writer-field">
+            <span>标题</span>
+            <input
+              data-field="title"
+              type="text"
+              maxlength="180"
+              placeholder="例如：把复杂问题讲清楚"
+              autocomplete="off"
+            />
+          </label>
+          <label class="writer-field">
+            <span>
+              文章路径 <small>发布后保持不变</small>
+            </span>
+            <input
+              data-field="slug"
+              type="text"
+              maxlength="100"
+              placeholder="make-things-clear"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <label class="writer-field">
+            <span>摘要</span>
+            <textarea
+              data-field="description"
+              rows="3"
+              maxlength="500"
+              placeholder="用一句话告诉读者，这篇文章讲什么。"
+            ></textarea>
+          </label>
+          <label class="writer-field">
+            <span>分类</span>
+            <select data-field="category">
+              <option value="knowledge">知识笔记</option>
+              <option value="essay">随笔</option>
+            </select>
+          </label>
+          <label class="writer-field">
+            <span>
+              发布时间 <small>北京时间 UTC+8</small>
+            </span>
+            <input data-field="pubDatetime" type="datetime-local" required />
+          </label>
+          <label class="writer-field">
+            <span>
+              标签 <small>用逗号分隔</small>
+            </span>
+            <input
+              data-field="tags"
+              type="text"
+              placeholder="写作, 方法, 思考"
+              autocomplete="off"
+            />
+          </label>
+          <p class="writer-field-help" data-remote-version></p>
+        </section>
+        <section class="writer-sidebar-card" data-repository-panel hidden>
+          <div class="writer-card-heading">
+            <div>
+              <p class="eyebrow">02 / LIBRARY</p>
+              <h2>仓库文章</h2>
+            </div>
+            <button class="writer-text-button" type="button" data-refresh-posts>
+              刷新
+            </button>
+          </div>
+          <label class="writer-field">
+            <span>选择要修改的文章</span>
+            <select data-remote-post>
+              <option value="">载入中…</option>
+            </select>
+          </label>
+          <div class="writer-library-actions">
+            <button class="writer-button" type="button" data-load-post>
+              载入文章
+            </button>
+            <button class="writer-text-button" type="button" data-sync-draft>
+              保存为仓库草稿
+            </button>
+          </div>
+          <p class="writer-field-help" data-repository-privacy></p>
+        </section>
+        <details class="writer-sidebar-card writer-drafts">
+          <summary>
+            本机草稿 <span data-draft-count>1</span>
+          </summary>
+          <label class="writer-field">
+            <span>切换草稿</span>
+            <select data-local-draft></select>
+          </label>
+          <button class="writer-text-button" type="button" data-delete-draft>
+            删除当前本机草稿
+          </button>
+          <p class="writer-field-help">
+            草稿只在当前浏览器保留。定期导出一份 Markdown，作为自己的备份。
+          </p>
+        </details>
+        <div class="writer-sidebar-card writer-shortcuts">
+          <div class="writer-card-heading">
+            <div>
+              <p class="eyebrow">03 / FLOW</p>
+              <h2>让写作更顺手</h2>
+            </div>
+          </div>
+          <dl>
+            <div>
+              <dt>
+                <kbd>Ctrl/⌘</kbd>
+                <kbd>S</kbd>
+              </dt>
+              <dd>保存草稿</dd>
+            </div>
+            <div>
+              <dt>
+                <kbd>Ctrl/⌘</kbd>
+                <kbd>↵</kbd>
+              </dt>
+              <dd>准备发布</dd>
+            </div>
+            <div>
+              <dt>
+                <kbd>Ctrl/⌘</kbd>
+                <kbd>B</kbd>
+              </dt>
+              <dd>加粗</dd>
+            </div>
+            <div>
+              <dt>
+                <kbd>Ctrl/⌘</kbd>
+                <kbd>I</kbd>
+              </dt>
+              <dd>斜体</dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
+      <section class="writer-editor" aria-label="文章编辑器">
+        <div class="writer-editor-head">
+          <div class="writer-editor-tabs" role="tablist" aria-label="编辑模式">
+            <button
+              class="writer-tab is-active"
+              type="button"
+              id="writer-tab-split"
+              data-tab="split"
+              role="tab"
+              aria-controls="writer-panel"
+              aria-selected="true"
+            >
+              双栏
+            </button>
+            <button
+              class="writer-tab"
+              type="button"
+              id="writer-tab-edit"
+              data-tab="edit"
+              role="tab"
+              aria-controls="writer-panel"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              写作
+            </button>
+            <button
+              class="writer-tab"
+              type="button"
+              id="writer-tab-preview"
+              data-tab="preview"
+              role="tab"
+              aria-controls="writer-panel"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              预览
+            </button>
+          </div>
+          <div class="writer-reading-meta">
+            <span data-word-count>0 字</span>
+            <span aria-hidden="true">·</span>
+            <span data-reading-time>约 1 分钟</span>
+          </div>
+        </div>
+        <div
+          class="writer-editor-body"
+          id="writer-panel"
+          data-editor-body
+          data-mode="split"
+          role="tabpanel"
+          aria-labelledby="writer-tab-split"
+        >
+          <div class="writer-pane writer-source-pane">
+            <div
+              class="writer-format-toolbar"
+              role="toolbar"
+              aria-label="Markdown 格式"
+            >
+              <button type="button" data-format="heading" aria-label="插入标题">
+                H
+              </button>
+              <button type="button" data-format="bold" aria-label="加粗">
+                <strong>B</strong>
+              </button>
+              <button type="button" data-format="italic" aria-label="斜体">
+                <em>I</em>
+              </button>
+              <button type="button" data-format="quote" aria-label="插入引用">
+                “
+              </button>
+              <button type="button" data-format="code" aria-label="插入代码块">
+                &lt;/&gt;
+              </button>
+              <button type="button" data-format="list" aria-label="插入列表">
+                ☷
+              </button>
+              <button
+                type="button"
+                data-format="task"
+                aria-label="插入任务列表"
+              >
+                ☑
+              </button>
+              <button type="button" data-format="link" aria-label="插入链接">
+                ↗
+              </button>
+              <span class="writer-format-divider" aria-hidden="true"></span>
+              <button type="button" data-import-button>
+                导入
+              </button>
+              <input
+                type="file"
+                accept=".md,.markdown,.txt"
+                data-import
+                hidden
+                aria-label="导入 Markdown 文件"
+              />
+            </div>
+            <textarea
+              class="writer-textarea"
+              data-editor
+              spellcheck="false"
+              aria-label="Markdown 正文"
+              placeholder="从一个清晰的小问题开始……"
+            ></textarea>
+            <div class="writer-source-footer">
+              <span>Markdown</span>
+              <span>公式 / Mermaid / Callout</span>
+            </div>
+          </div>
+          <div class="writer-pane writer-preview-pane">
+            <div class="writer-preview-label">
+              <span></span>阅读预览
+            </div>
+            <article
+              class="writer-preview app-prose"
+              data-preview
+              aria-label="文章预览"
+            ></article>
+          </div>
+        </div>
+      </section>
+    </div>
+    <details class="writer-guide">
+      <summary>查看 Markdown 写作提示</summary>
+      <div class="writer-guide-grid">
+        <div>
+          <code>&gt; [!NOTE] 标题</code>
+          <span>支持 Obsidian Callout、任务列表、表格和 ==高亮==。</span>
+        </div>
+        <div>
+          <code>$E = mc^2$</code>
+          <span>行内公式用 $，独立公式用 $$，预览和文章都能渲染。</span>
+        </div>
+        <div>
+          <code>```mermaid</code>
+          <span>把流程图写成文字。图表出错时保留源码，方便继续修改。</span>
+        </div>
+        <div>
+          <code>[[article-slug|显示名称]]</code>
+          <span>
+            按文章路径连接已发布文章。图片使用 src/assets 内的相对路径。
+          </span>
+        </div>
+      </div>
+    </details>
+    <noscript>
+      <p class="writer-publication">
+        写作台需要启用 JavaScript。文章阅读和 Markdown 文件编辑仍可使用。
+      </p>
+    </noscript>
+  </section>
+  <dialog
+    class="writer-dialog"
+    data-connect-dialog
+    aria-labelledby="connect-title"
+  >
+    <form data-connect-form>
+      <div class="writer-card-heading">
+        <div>
+          <p class="eyebrow">YOUR BLOG / YOUR REPOSITORY</p>
+          <h2 id="connect-title">连接自己的 GitHub</h2>
+        </div>
+        <button
+          class="writer-dialog-close"
+          type="button"
+          data-close
+          aria-label="关闭连接窗口"
+        >
+          ×
+        </button>
+      </div>
+      <p>
+        连接后，可以载入已有文章并直接发布。访问令牌只在当前标签页的内存中使用，刷新页面后需要重新连接。
+      </p>
+      <ol>
+        <li>
+          <a href={tokenSetup} target="_blank" rel="noopener noreferrer">
+            在 GitHub 创建细粒度访问令牌 ↗
+          </a>
+        </li>
+        <li>
+          仓库选择 <strong>scyolo/blog</strong>，只开放{" "}
+          <strong>Contents 读写</strong>和 <strong>Actions 只读</strong>
+          权限，并设置到期时间。
+        </li>
+      </ol>
+      <label class="writer-field">
+        <span>访问令牌</span>
+        <input
+          data-token
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="github_pat_…"
+          required
+        />
+      </label>
+      <p class="writer-field-help">
+        仅发送到 GitHub API，不写入浏览器存储、导出文件或博客仓库。
+      </p>
+      <p class="writer-form-error" data-connect-error role="alert"></p>
+      <div class="writer-dialog-actions">
+        <button class="writer-button" type="button" data-close>
+          取消
+        </button>
+        <button
+          class="writer-button writer-button-accent"
+          type="submit"
+          data-connect-submit
+        >
+          连接 GitHub
+        </button>
+      </div>
+    </form>
+  </dialog>
+  <dialog
+    class="writer-dialog"
+    data-publish-dialog
+    aria-labelledby="publish-title"
+  >
+    <form data-publish-form>
+      <p class="eyebrow">ONE LAST LOOK</p>
+      <h2 id="publish-title">准备发布</h2>
+      <p class="writer-publish-name" data-publish-name></p>
+      <p data-publish-explanation></p>
+      <p class="writer-field-help">
+        提交后会自动构建。只有线上版本确认更新，才会显示“已上线”。
+      </p>
+      <p class="writer-form-error" data-publish-error role="alert"></p>
+      <div class="writer-dialog-actions">
+        <button class="writer-button" type="button" data-close>
+          继续编辑
+        </button>
+        <button
+          class="writer-button writer-button-accent"
+          type="submit"
+          data-confirm-publish
+        >
+          确认发布
+        </button>
+      </div>
+    </form>
+  </dialog>
+  <script
+    type="application/json"
+    id="writer-config"
+    set:html={jsonForScript({
+      assets,
+      repository: writerRepository,
+      branch: writerBranch,
+      workflow: writerWorkflow,
+    })}
+  />
+</SiteLayout>
+<script>
+  import "../scripts/writer";
+</script>

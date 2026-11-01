@@ -1,5 +1,7 @@
 # GitHub Pages 专用部署分支
 
+2026-11-01 的写作台也沿用本分支。作者在 `/blog/write/` 连接 GitHub 后直接提交文章，由下述现有工作流验证并部署；`main` 的指针与 Cloudflare 流程保持原样。使用方法及授权边界见 [写作说明](WRITING.md)，本轮验证见 [写作台验收记录](WRITER-VERIFICATION.md)。
+
 ## 分支与内容
 
 - 分支：`codex/github-pages`。
